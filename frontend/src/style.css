@@ -1,0 +1,36 @@
+﻿@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Use local/system fonts only to avoid third-party CDN requests. */
+@font-face {
+  font-family: "ManropeLocal";
+  src: local("Manrope"), local("Segoe UI");
+}
+
+@font-face {
+  font-family: "NotoSansSCLocal";
+  src: local("Noto Sans SC"), local("Microsoft YaHei"), local("PingFang SC");
+}
+
+:root {
+  color-scheme: light;
+}
+
+body {
+  margin: 0;
+  font-family: "ManropeLocal", "NotoSansSCLocal", "Segoe UI", sans-serif;
+  min-height: 100vh;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+.panel {
+  @apply rounded-2xl bg-white/85 backdrop-blur-md shadow-float border border-slate-200/70;
+}
+
+.gradient-text {
+  @apply bg-gradient-to-r from-emerald-500 to-rose-500 bg-clip-text text-transparent;
+}
