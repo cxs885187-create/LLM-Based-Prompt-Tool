@@ -20,6 +20,7 @@ class Settings(BaseSettings):
     db_user: str = "root"
     db_password: str = ""
     db_name: str = "test"
+    database_url: str = "sqlite:///./test.db"
 
     # LLM provider settings (GLM-4 compatible)
     aigc_api_url: str = "https://open.bigmodel.cn/api/paas/v4/chat/completions"
@@ -36,10 +37,6 @@ class Settings(BaseSettings):
 
     use_mock_llm: bool = True
     cors_origins: str = "http://localhost:5173"
-
-    @property
-    def database_url(self) -> str:
-        return "sqlite:///./test.db"
 
     @property
     def cors_origin_list(self) -> list[str]:
