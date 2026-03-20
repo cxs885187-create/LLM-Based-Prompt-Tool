@@ -35,7 +35,7 @@ def _ensure_sqlite_compatibility() -> None:
             )
 
 
-# Keep auto table creation for local development only.
+# Bootstrap tables on the configured database connection.
 record.Base.metadata.create_all(bind=engine)
 _ensure_sqlite_compatibility()
 
@@ -48,8 +48,8 @@ app.add_middleware(
     CORSMiddleware,
     allow_origins=settings.cors_origin_list,
     allow_credentials=True,
-    allow_methods=["GET", "POST", "PUT", "OPTIONS"],
-    allow_headers=["Authorization", "Content-Type", "X-Requested-With"],
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
 
 app.include_router(experiment.router, prefix="/api/v1/experiment", tags=["experiment"])
