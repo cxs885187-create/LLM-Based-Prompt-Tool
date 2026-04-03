@@ -1,8 +1,7 @@
-﻿@tailwind base;
+@tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-/* Use local/system fonts only to avoid third-party CDN requests. */
 @font-face {
   font-family: "ManropeLocal";
   src: local("Manrope"), local("Segoe UI");
@@ -13,24 +12,264 @@
   src: local("Noto Sans SC"), local("Microsoft YaHei"), local("PingFang SC");
 }
 
+@font-face {
+  font-family: "GeorgiaLocal";
+  src: local("Georgia"), local("Times New Roman");
+}
+
 :root {
   color-scheme: light;
+  --bg: #f6f0e8;
+  --bg-soft: rgba(255, 250, 244, 0.8);
+  --surface: rgba(255, 252, 247, 0.9);
+  --surface-strong: rgba(255, 255, 255, 0.96);
+  --line: rgba(88, 65, 47, 0.12);
+  --line-strong: rgba(88, 65, 47, 0.24);
+  --ink: #1f1b17;
+  --muted: #6f6458;
+  --teal: #1f7a72;
+  --teal-soft: #d7efeb;
+  --coral: #d06852;
+  --coral-soft: #f7dfd8;
+  --gold: #b68a2f;
+  --gold-soft: #f2e7c4;
+  --navy: #233147;
+  --navy-soft: #d9e1ee;
+  --shadow: 0 24px 60px rgba(54, 37, 23, 0.12);
+}
+
+html,
+body,
+#app {
+  min-height: 100%;
 }
 
 body {
   margin: 0;
-  font-family: "ManropeLocal", "NotoSansSCLocal", "Segoe UI", sans-serif;
   min-height: 100vh;
+  color: var(--ink);
+  background:
+    radial-gradient(circle at top left, rgba(31, 122, 114, 0.14), transparent 28%),
+    radial-gradient(circle at top right, rgba(208, 104, 82, 0.16), transparent 32%),
+    linear-gradient(180deg, #fff9f1 0%, var(--bg) 48%, #efe8de 100%);
+  font-family: "ManropeLocal", "NotoSansSCLocal", "Segoe UI", sans-serif;
 }
 
 * {
   box-sizing: border-box;
 }
 
+::selection {
+  background: rgba(31, 122, 114, 0.16);
+}
+
+.app-shell::before {
+  content: "";
+  position: fixed;
+  inset: 18px;
+  pointer-events: none;
+  border: 1px solid rgba(88, 65, 47, 0.08);
+  border-radius: 28px;
+}
+
 .panel {
-  @apply rounded-2xl bg-white/85 backdrop-blur-md shadow-float border border-slate-200/70;
+  @apply rounded-[28px] border;
+  border-color: var(--line);
+  background: linear-gradient(180deg, var(--surface-strong), var(--surface));
+  box-shadow: var(--shadow);
+  backdrop-filter: blur(16px);
+}
+
+.panel-soft {
+  @apply rounded-[24px] border;
+  border-color: var(--line);
+  background: rgba(255, 255, 255, 0.72);
+}
+
+.section-label {
+  @apply text-xs font-semibold uppercase tracking-[0.28em];
+  color: var(--muted);
+}
+
+.eyebrow-pill {
+  @apply inline-flex items-center gap-2 rounded-full border px-3 py-1 text-xs font-semibold uppercase tracking-[0.16em];
+  border-color: var(--line-strong);
+  color: var(--muted);
+  background: rgba(255, 255, 255, 0.64);
+}
+
+.display-title {
+  font-family: "GeorgiaLocal", "NotoSansSCLocal", serif;
+  letter-spacing: -0.03em;
 }
 
 .gradient-text {
-  @apply bg-gradient-to-r from-emerald-500 to-rose-500 bg-clip-text text-transparent;
+  background: linear-gradient(135deg, var(--teal), var(--coral));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.primary-button {
+  @apply inline-flex items-center justify-center rounded-full px-5 py-3 text-sm font-semibold transition;
+  background: linear-gradient(135deg, var(--navy), #33435f);
+  color: #fffaf5;
+}
+
+.primary-button:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 14px 32px rgba(35, 49, 71, 0.24);
+}
+
+.secondary-button {
+  @apply inline-flex items-center justify-center rounded-full border px-5 py-3 text-sm font-semibold transition;
+  border-color: var(--line-strong);
+  color: var(--ink);
+  background: rgba(255, 255, 255, 0.76);
+}
+
+.secondary-button:hover {
+  background: rgba(255, 255, 255, 0.96);
+}
+
+.ghost-button {
+  @apply inline-flex items-center justify-center rounded-full px-4 py-2 text-sm font-semibold transition;
+  color: var(--muted);
+}
+
+.ghost-button:hover {
+  background: rgba(255, 255, 255, 0.7);
+  color: var(--ink);
+}
+
+.metric-card {
+  @apply rounded-[24px] border p-5;
+  border-color: var(--line);
+  background: rgba(255, 255, 255, 0.68);
+}
+
+.metric-value {
+  @apply mt-3 text-4xl font-semibold;
+  color: var(--ink);
+}
+
+.chip {
+  @apply inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold;
+}
+
+.chip-teal {
+  background: var(--teal-soft);
+  color: var(--teal);
+}
+
+.chip-coral {
+  background: var(--coral-soft);
+  color: var(--coral);
+}
+
+.chip-gold {
+  background: var(--gold-soft);
+  color: #8a6923;
+}
+
+.chip-navy {
+  background: var(--navy-soft);
+  color: var(--navy);
+}
+
+.grid-paper {
+  background-image:
+    linear-gradient(rgba(88, 65, 47, 0.06) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(88, 65, 47, 0.06) 1px, transparent 1px);
+  background-size: 28px 28px;
+}
+
+.divider-line {
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--line-strong), transparent);
+}
+
+.data-bar {
+  @apply relative overflow-hidden rounded-full;
+  background: rgba(35, 49, 71, 0.08);
+  height: 10px;
+}
+
+.data-bar > span {
+  @apply absolute inset-y-0 left-0 rounded-full;
+  background: linear-gradient(90deg, var(--teal), var(--coral));
+}
+
+.field-label {
+  @apply mb-2 block text-sm font-semibold;
+  color: var(--ink);
+}
+
+.field-input,
+.field-select,
+.field-textarea {
+  @apply w-full rounded-2xl border px-4 py-3 text-sm outline-none transition;
+  border-color: rgba(88, 65, 47, 0.16);
+  background: rgba(255, 255, 255, 0.88);
+  color: var(--ink);
+}
+
+.field-input:focus,
+.field-select:focus,
+.field-textarea:focus {
+  border-color: rgba(31, 122, 114, 0.4);
+  box-shadow: 0 0 0 4px rgba(31, 122, 114, 0.12);
+}
+
+.field-textarea {
+  @apply resize-none;
+}
+
+.step-badge {
+  @apply inline-flex h-9 w-9 items-center justify-center rounded-full text-sm font-semibold;
+  background: rgba(35, 49, 71, 0.08);
+  color: var(--navy);
+}
+
+.step-badge.active {
+  background: var(--navy);
+  color: white;
+}
+
+.assistant-glow {
+  box-shadow:
+    0 22px 46px rgba(208, 104, 82, 0.18),
+    inset 0 1px 0 rgba(255, 255, 255, 0.65);
+}
+
+.table-shell {
+  border: 1px solid var(--line);
+  border-radius: 24px;
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.78);
+}
+
+.table-shell table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.table-shell th {
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+  background: rgba(246, 240, 232, 0.9);
+}
+
+.table-shell th,
+.table-shell td {
+  padding: 14px 16px;
+  border-bottom: 1px solid rgba(88, 65, 47, 0.08);
+  text-align: left;
+  vertical-align: top;
+}
+
+.table-shell tr:last-child td {
+  border-bottom: 0;
 }

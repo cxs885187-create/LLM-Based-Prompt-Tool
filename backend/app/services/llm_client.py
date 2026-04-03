@@ -58,6 +58,14 @@ GENERIC_REMINDER_PATTERNS = (
     "保持礼貌",
 )
 
+RISK_RULES = (
+    ("人身贬损", {"去你妈的", "脑子有病", "你妈死了", "脑残", "智障", "傻逼", "白痴", "废物", "垃圾"}),
+    ("驱逐式表达", {"滚"}),
+    ("标签化攻击", {"你这", "你个", "你就是", "这类人", "就这", "典型"}),
+    ("阴阳怪气", {"呵呵", "笑死", "真有意思", "可真行", "真厉害"}),
+    ("情绪宣泄", {"气死", "恶心", "离谱", "受不了", "烦死"}),
+)
+
 _LLM_SEMAPHORE = asyncio.Semaphore(max(1, settings.llm_max_concurrency))
 _LLM_CONSECUTIVE_FAILURES = 0
 _LLM_CIRCUIT_OPEN_UNTIL = 0.0
@@ -66,6 +74,25 @@ _LLM_CIRCUIT_OPEN_UNTIL = 0.0
 def _contains_uncivil_keyword(text: str) -> bool:
     lowered = text.lower()
     return any(keyword in lowered for keyword in UNCIVIL_KEYWORDS)
+
+
+def analyze_risk_features(text: str) -> list[str]:
+    normalized = str(text or "").strip().lower()
+    if not normalized:
+        return []
+
+    features = []
+    for label, keywords in RISK_RULES:
+        if any(keyword in normalized for keyword in keywords):
+            features.append(label)
+
+    if re.search(r"[!！]{2,}|[?？]{2,}", normalized) and "情绪升级" not in features:
+        features.append("情绪升级")
+
+    if not features and _contains_uncivil_keyword(normalized):
+        features.append("潜在攻击性表达")
+
+    return features[:4]
 
 
 def _normalize_generated_text(text: str) -> str:

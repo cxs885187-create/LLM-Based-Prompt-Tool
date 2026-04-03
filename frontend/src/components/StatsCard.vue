@@ -1,8 +1,8 @@
-﻿<template>
-  <article class="panel p-5">
-    <p class="text-sm font-semibold uppercase tracking-wide text-slate-500">{{ label }}</p>
-    <p class="mt-2 text-3xl font-display font-bold text-slate-900">{{ value }}</p>
-    <p v-if="hint" class="mt-2 text-sm text-slate-500">{{ hint }}</p>
+<template>
+  <article class="metric-card">
+    <p class="section-label">{{ label }}</p>
+    <p class="metric-value">{{ value }}</p>
+    <p v-if="hint" class="mt-2 text-sm leading-6 text-slate-500">{{ hint }}</p>
   </article>
 </template>
 

@@ -1,12 +1,16 @@
-﻿<template>
+<template>
   <article class="panel overflow-hidden p-0">
-    <div class="border-b border-slate-200 bg-slate-50/80 px-5 py-3 text-sm font-semibold text-slate-600">
-      情境帖子
+    <div class="flex items-center justify-between border-b border-slate-200 bg-white/70 px-5 py-4">
+      <div>
+        <p class="section-label">模拟评论区</p>
+        <p class="mt-1 text-sm text-slate-500">阅读帖子与已有回复后，再写下你的评论。</p>
+      </div>
+      <span class="chip chip-coral">风险 {{ scenario.riskLevel }}</span>
     </div>
 
-    <div class="px-5 py-4">
+    <div class="px-5 py-5">
       <div class="flex gap-3">
-        <div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-slate-900 font-semibold text-white">
+        <div class="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-slate-900 text-base font-semibold text-white">
           {{ avatarInitial }}
         </div>
 
@@ -18,16 +22,17 @@
             <span class="text-slate-500">{{ scenario.postTime || "刚刚" }}</span>
           </div>
 
-          <p class="mt-2 whitespace-pre-line text-[15px] leading-7 text-slate-800">
+          <p class="mt-3 whitespace-pre-line text-[15px] leading-8 text-slate-800">
             {{ scenario.postText || scenario.context }}
           </p>
 
-          <div class="mt-3 flex flex-wrap items-center gap-2 text-xs">
-            <span class="rounded-full bg-emerald-100 px-2.5 py-1 font-semibold text-emerald-700">{{ scenario.topic }}</span>
-            <span class="rounded-full bg-amber-100 px-2.5 py-1 font-semibold text-amber-700">风险：{{ scenario.riskLevel }}</span>
+          <div class="mt-4 flex flex-wrap items-center gap-2 text-xs">
+            <span class="chip chip-teal">{{ scenario.topic }}</span>
+            <span class="chip chip-gold">研究情境</span>
+            <span class="chip chip-navy">仅模拟，不会真实发布</span>
           </div>
 
-          <div class="mt-4 grid grid-cols-4 gap-2 border-y border-slate-100 py-3 text-xs text-slate-500">
+          <div class="mt-5 grid grid-cols-4 gap-2 border-y border-slate-100 py-3 text-xs text-slate-500">
             <p class="text-center">回复 {{ scenario.stats?.replies ?? 0 }}</p>
             <p class="text-center">转发 {{ scenario.stats?.reposts ?? 0 }}</p>
             <p class="text-center">喜欢 {{ scenario.stats?.likes ?? 0 }}</p>
@@ -37,11 +42,11 @@
       </div>
     </div>
 
-    <div class="border-t border-slate-200">
+    <div class="border-t border-slate-200 bg-white/60">
       <div
         v-for="reply in scenario.seedReplies || []"
         :key="reply.id"
-        class="border-b border-slate-100 px-5 py-3 last:border-b-0"
+        class="border-b border-slate-100 px-5 py-4 last:border-b-0"
       >
         <div class="flex gap-3">
           <div class="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-slate-200 text-xs font-semibold text-slate-700">

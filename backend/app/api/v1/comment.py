@@ -1,4 +1,5 @@
-﻿import datetime
+import datetime
+import json
 
 from fastapi import APIRouter, Depends, HTTPException, Request
 from sqlalchemy.orm import Session
@@ -13,7 +14,7 @@ from app.schemas.dto import (
     CommentCheckRequest,
     CommentCheckResponse,
 )
-from app.services.llm_client import check_incivility, generate_prompt
+from app.services.llm_client import analyze_risk_features, check_incivility, generate_prompt
 from app.services.prompts import get_prompt_template
 
 
@@ -36,22 +37,22 @@ async def check_comment(
     if record.status != ExperimentStatusEnum.INITIALIZED.value:
         raise HTTPException(
             status_code=400,
-            detail="实验状态无效：请先调用 /init，且同一个 experiment_id 只能调用一次 /check。",
+            detail="Invalid experiment state: call /init first, and each experiment_id may only call /check once.",
         )
 
-    # Capture immutable fields and release this session before awaiting remote LLM calls.
     assigned_group = record.group
     db.close()
 
     is_uncivil = await check_incivility(payload.comment_text)
+    risk_features = analyze_risk_features(payload.comment_text)
 
     prompt_text = None
     prompt_type = None
     prompt_source = None
     if is_uncivil:
-        template = get_prompt_template(assigned_group)
-        prompt_text, prompt_source = await generate_prompt(template, payload.comment_text)
-        prompt_type = assigned_group
+      template = get_prompt_template(assigned_group)
+      prompt_text, prompt_source = await generate_prompt(template, payload.comment_text)
+      prompt_type = assigned_group
 
     write_db = SessionLocal()
     try:
@@ -64,12 +65,13 @@ async def check_comment(
         if writable_record.status != ExperimentStatusEnum.INITIALIZED.value:
             raise HTTPException(
                 status_code=400,
-                detail="实验状态无效：请先调用 /init，且同一个 experiment_id 只能调用一次 /check。",
+                detail="Invalid experiment state: call /init first, and each experiment_id may only call /check once.",
             )
 
         writable_record.original_comment = payload.comment_text
         writable_record.prompt_type = prompt_type
         writable_record.generated_prompt = prompt_text
+        writable_record.risk_features = json.dumps(risk_features, ensure_ascii=False) if risk_features else None
         writable_record.status = ExperimentStatusEnum.CHECKED.value
         writable_record.updated_at = datetime.datetime.utcnow()
         write_db.commit()
@@ -81,6 +83,7 @@ async def check_comment(
         prompt_text=prompt_text,
         prompt_type=prompt_type,
         prompt_source=prompt_source,
+        risk_features=risk_features,
     )
 
 
@@ -98,7 +101,7 @@ def record_action(
     if record.status != ExperimentStatusEnum.CHECKED.value:
         raise HTTPException(
             status_code=400,
-            detail="实验状态无效：请先完成 /check，再调用 /action。",
+            detail="Invalid experiment state: complete /check before calling /action.",
         )
 
     if request.action == "modify" and not request.modified_comment:

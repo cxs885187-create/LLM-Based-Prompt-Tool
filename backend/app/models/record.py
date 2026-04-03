@@ -32,10 +32,15 @@ class ExperimentRecord(Base):
     original_comment = Column(Text, nullable=True)
     prompt_type = Column(String(20), nullable=True)
     generated_prompt = Column(Text, nullable=True)
+    risk_features = Column(Text, nullable=True)
 
     # Use string for broad SQLite compatibility and backward-safe reads.
     final_action = Column(String(20), nullable=True)
     modified_comment = Column(Text, nullable=True)
+    pre_survey = Column(Text, nullable=True)
+    prompt_feedback = Column(Text, nullable=True)
+    post_survey = Column(Text, nullable=True)
+    decision_latency_ms = Column(Integer, nullable=True)
 
     status = Column(
         String(20),

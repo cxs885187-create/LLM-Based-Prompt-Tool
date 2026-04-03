@@ -1,4 +1,4 @@
-﻿import { defineStore } from "pinia";
+import { defineStore } from "pinia";
 
 import { apiClient } from "../api/http";
 import { tracker } from "../utils/hci_tracker";
@@ -133,6 +133,31 @@ function buildDefaultAllocation() {
   };
 }
 
+function buildDefaultPreSurvey() {
+  return {
+    educationLevel: "lower_undergraduate",
+    primaryPlatform: "campus_wall",
+    commentingFrequency: "occasionally",
+    civilityConfidence: 3
+  };
+}
+
+function buildDefaultPromptFeedback() {
+  return {
+    helpfulness: 4,
+    friendliness: 4,
+    relevance: 4
+  };
+}
+
+function buildDefaultPostSurvey() {
+  return {
+    reflectionGain: 4,
+    realWorldAdoption: 4,
+    openFeedback: ""
+  };
+}
+
 function getAdminAuthHeaders() {
   const token = sessionStorage.getItem(ADMIN_TOKEN_STORAGE_KEY);
   if (!token || !token.trim()) {
@@ -154,15 +179,22 @@ function buildDefaultState() {
     promptType: "",
     promptSource: "",
     promptText: "",
+    riskFeatures: [],
     isUncivil: false,
     originalComment: "",
     finalAction: "",
     modifiedComment: "",
     consentAccepted: false,
+    feedbackSubmitted: false,
+    preSurvey: buildDefaultPreSurvey(),
+    promptFeedback: buildDefaultPromptFeedback(),
+    postSurvey: buildDefaultPostSurvey(),
+    decisionLatencyMs: null,
     loading: {
       init: false,
       check: false,
       action: false,
+      feedback: false,
       dashboard: false,
       allocation: false
     },
@@ -174,7 +206,12 @@ function buildDefaultState() {
     logs: [],
     dashboard: {
       summary: null,
-      distributions: null,
+      distributions: {
+        groups: {},
+        actions: {},
+        scenarios: {}
+      },
+      insights: {},
       allocation: buildDefaultAllocation(),
       records: []
     },
@@ -189,6 +226,65 @@ function loadPersistedState() {
   } catch {
     return null;
   }
+}
+
+function buildDashboardFallback(logs, allocation) {
+  const localRecords = logs.map((item) => ({
+    experiment_id: item.experimentId,
+    group: item.group,
+    scenario_id: item.scenarioId,
+    prompt_type: item.promptType,
+    generated_prompt: item.generatedPrompt || null,
+    original_comment: item.originalComment || null,
+    modified_comment: item.modifiedComment || null,
+    final_submitted_comment: item.finalSubmittedComment || null,
+    final_action: item.action,
+    prompt_feedback: item.promptFeedback || null,
+    post_survey: item.postSurvey || null,
+    decision_latency_ms: item.decisionLatencyMs || null,
+    status: "completed",
+    created_at: item.createdAt,
+    updated_at: item.createdAt
+  }));
+
+  const feedbackRows = localRecords.filter((item) => item.post_survey);
+  const average = (values) => {
+    if (!values.length) {
+      return null;
+    }
+    return Math.round((values.reduce((sum, value) => sum + value, 0) / values.length) * 100) / 100;
+  };
+
+  return {
+    summary: {
+      total_records: localRecords.length,
+      completed_records: localRecords.length,
+      uncivil_triggered_records: localRecords.filter((item) => !!item.prompt_type).length
+    },
+    distributions: {
+      groups: {},
+      actions: {},
+      scenarios: {}
+    },
+    insights: {
+      modify_rate: localRecords.length
+        ? Math.round(
+          (localRecords.filter((item) => item.final_action === "modify").length / localRecords.length) * 100
+        ) / 100
+        : null,
+      avg_helpfulness: average(feedbackRows.map((item) => item.prompt_feedback?.helpfulness).filter(Boolean)),
+      avg_friendliness: average(feedbackRows.map((item) => item.prompt_feedback?.friendliness).filter(Boolean)),
+      avg_relevance: average(feedbackRows.map((item) => item.prompt_feedback?.relevance).filter(Boolean)),
+      avg_reflection_gain: average(feedbackRows.map((item) => item.post_survey?.reflection_gain).filter(Boolean)),
+      avg_real_world_adoption: average(
+        feedbackRows.map((item) => item.post_survey?.real_world_adoption).filter(Boolean)
+      ),
+      avg_decision_latency_ms: average(localRecords.map((item) => item.decision_latency_ms).filter(Boolean)),
+      feedback_count: feedbackRows.length
+    },
+    allocation: allocation || buildDefaultAllocation(),
+    records: localRecords
+  };
 }
 
 export const useExperimentStore = defineStore("experiment", {
@@ -212,6 +308,15 @@ export const useExperimentStore = defineStore("experiment", {
     },
     canEnterScenario(state) {
       return Boolean(state.experimentId && state.scenarioId);
+    },
+    finalSubmittedComment(state) {
+      if (state.finalAction === "modify") {
+        return state.modifiedComment;
+      }
+      if (state.finalAction === "post") {
+        return state.originalComment;
+      }
+      return "";
     }
   },
   actions: {
@@ -227,11 +332,17 @@ export const useExperimentStore = defineStore("experiment", {
           promptType: this.promptType,
           promptSource: this.promptSource,
           promptText: this.promptText,
+          riskFeatures: this.riskFeatures,
           isUncivil: this.isUncivil,
           originalComment: this.originalComment,
           finalAction: this.finalAction,
           modifiedComment: this.modifiedComment,
           consentAccepted: this.consentAccepted,
+          feedbackSubmitted: this.feedbackSubmitted,
+          preSurvey: this.preSurvey,
+          promptFeedback: this.promptFeedback,
+          postSurvey: this.postSurvey,
+          decisionLatencyMs: this.decisionLatencyMs,
           logs: this.logs
         })
       );
@@ -240,12 +351,26 @@ export const useExperimentStore = defineStore("experiment", {
       this.mode = mode;
       this.persistState();
     },
+    setPreSurvey(payload) {
+      this.preSurvey = { ...this.preSurvey, ...payload };
+      this.persistState();
+    },
+    setPromptFeedback(payload) {
+      this.promptFeedback = { ...this.promptFeedback, ...payload };
+      this.persistState();
+    },
+    setPostSurvey(payload) {
+      this.postSurvey = { ...this.postSurvey, ...payload };
+      this.persistState();
+    },
     resetExperimentFlow() {
       const keepMode = this.mode;
       const keepLogs = [...this.logs];
+      const keepDashboard = this.dashboard;
       Object.assign(this, buildDefaultState());
       this.mode = keepMode;
       this.logs = keepLogs;
+      this.dashboard = keepDashboard;
       sessionStorage.removeItem(STORAGE_KEY);
       this.persistState();
     },
@@ -261,7 +386,13 @@ export const useExperimentStore = defineStore("experiment", {
         this.sessionId = this.sessionId || crypto.randomUUID();
         const { data } = await apiClient.post("/experiment/init", {
           session_id: this.sessionId,
-          scenario_id: scenarioId
+          scenario_id: scenarioId,
+          pre_survey: {
+            education_level: this.preSurvey.educationLevel,
+            primary_platform: this.preSurvey.primaryPlatform,
+            commenting_frequency: this.preSurvey.commentingFrequency,
+            civility_confidence: this.preSurvey.civilityConfidence
+          }
         });
 
         this.experimentId = data.experiment_id;
@@ -270,9 +401,14 @@ export const useExperimentStore = defineStore("experiment", {
         this.promptType = "";
         this.promptSource = "";
         this.promptText = "";
+        this.riskFeatures = [];
         this.isUncivil = false;
         this.finalAction = "";
         this.modifiedComment = "";
+        this.feedbackSubmitted = false;
+        this.decisionLatencyMs = null;
+        this.promptFeedback = buildDefaultPromptFeedback();
+        this.postSurvey = buildDefaultPostSurvey();
 
         tracker.reset();
         tracker.start("full_journey");
@@ -329,6 +465,7 @@ export const useExperimentStore = defineStore("experiment", {
         this.promptText = data.prompt_text || "";
         this.promptType = data.prompt_type || "";
         this.promptSource = data.prompt_source || "";
+        this.riskFeatures = data.risk_features || [];
 
         if (this.isUncivil) {
           tracker.start("intervention_decision_latency");
@@ -336,7 +473,8 @@ export const useExperimentStore = defineStore("experiment", {
 
         tracker.log("comment_checked", {
           isUncivil: this.isUncivil,
-          promptType: this.promptType
+          promptType: this.promptType,
+          riskFeatures: this.riskFeatures
         });
 
         this.persistState();
@@ -386,7 +524,7 @@ export const useExperimentStore = defineStore("experiment", {
 
       try {
         if (this.isUncivil) {
-          tracker.end("intervention_decision_latency", { choice });
+          this.decisionLatencyMs = Math.round(tracker.end("intervention_decision_latency", { choice }) || 0);
         }
 
         tracker.start("action_api_latency");
@@ -430,6 +568,9 @@ export const useExperimentStore = defineStore("experiment", {
           originalComment: this.originalComment,
           modifiedComment: action === "modify" ? modifiedComment : null,
           finalSubmittedComment,
+          promptFeedback: null,
+          postSurvey: null,
+          decisionLatencyMs: this.decisionLatencyMs,
           createdAt: new Date().toISOString(),
           trackerEvents: tracker.getEvents()
         });
@@ -451,6 +592,51 @@ export const useExperimentStore = defineStore("experiment", {
           this.requestControllers.action = null;
         }
         this.loading.action = false;
+      }
+    },
+    async saveExperimentFeedback() {
+      if (!this.experimentId || !this.finalAction || this.feedbackSubmitted) {
+        return;
+      }
+
+      this.loading.feedback = true;
+      this.lastError = "";
+
+      try {
+        const payload = {
+          experiment_id: this.experimentId,
+          post_survey: {
+            reflection_gain: this.postSurvey.reflectionGain,
+            real_world_adoption: this.postSurvey.realWorldAdoption,
+            open_feedback: this.postSurvey.openFeedback?.trim() || ""
+          },
+          decision_latency_ms: this.decisionLatencyMs || 0
+        };
+
+        if (this.isUncivil) {
+          payload.prompt_feedback = {
+            helpfulness: this.promptFeedback.helpfulness,
+            friendliness: this.promptFeedback.friendliness,
+            relevance: this.promptFeedback.relevance
+          };
+        }
+
+        await apiClient.post("/experiment/feedback", payload);
+        this.feedbackSubmitted = true;
+
+        const latestLog = [...this.logs].reverse().find((item) => item.experimentId === this.experimentId);
+        if (latestLog) {
+          latestLog.promptFeedback = this.isUncivil ? { ...this.promptFeedback } : null;
+          latestLog.postSurvey = { ...this.postSurvey };
+          latestLog.decisionLatencyMs = this.decisionLatencyMs;
+        }
+
+        this.persistState();
+      } catch (error) {
+        this.lastError = error.message;
+        throw error;
+      } finally {
+        this.loading.feedback = false;
       }
     },
     async fetchDashboard({ group = "", scenarioId = "", limit = 100 } = {}) {
@@ -481,36 +667,7 @@ export const useExperimentStore = defineStore("experiment", {
           throw error;
         }
 
-        // Fallback to local logs when backend data endpoint is unavailable.
-        const localRecords = this.logs.map((item) => ({
-          experiment_id: item.experimentId,
-          group: item.group,
-          scenario_id: item.scenarioId,
-          prompt_type: item.promptType,
-          generated_prompt: item.generatedPrompt || null,
-          original_comment: item.originalComment || null,
-          modified_comment: item.modifiedComment || null,
-          final_submitted_comment: item.finalSubmittedComment || null,
-          final_action: item.action,
-          status: "completed",
-          created_at: item.createdAt,
-          updated_at: item.createdAt
-        }));
-
-        this.dashboard = {
-          summary: {
-            total_records: localRecords.length,
-            completed_records: localRecords.length,
-            uncivil_triggered_records: localRecords.filter((item) => !!item.prompt_type).length
-          },
-          distributions: {
-            groups: {},
-            actions: {}
-          },
-          allocation: this.dashboard.allocation || buildDefaultAllocation(),
-          records: localRecords
-        };
-
+        this.dashboard = buildDashboardFallback(this.logs, this.dashboard.allocation);
         this.lastError = `${error.message}（已切换为本地日志数据）`;
         return this.dashboard;
       } finally {

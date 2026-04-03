@@ -1,4 +1,5 @@
-﻿import datetime
+import datetime
+import json
 import random
 import uuid
 
@@ -15,6 +16,8 @@ from app.models.record import (
     PromptAllocationConfig,
 )
 from app.schemas.dto import (
+    ExperimentFeedbackRequest,
+    ExperimentFeedbackResponse,
     ExperimentInitRequest,
     ExperimentInitResponse,
     PromptAllocationResponse,
@@ -95,7 +98,6 @@ def _assign_group_weighted_balanced(db: Session) -> str:
         .all()
     )
 
-    # Weighted block randomization: keep count/weight as balanced as possible.
     score_map = {
         group: grouped_counts.get(group, 0) / weights[group]
         for group in active_groups
@@ -125,6 +127,15 @@ def _serialize_action(action_value):
     return _ACTION_NORMALIZE_MAP.get(text_value.upper(), text_value)
 
 
+def _parse_json_field(value):
+    if not value:
+        return None
+    try:
+        return json.loads(value)
+    except Exception:
+        return None
+
+
 def _resolve_final_submitted_comment(row: ExperimentRecord):
     action = _serialize_action(row.final_action)
     if action == "modify":
@@ -140,17 +151,69 @@ def _serialize_record(row: ExperimentRecord) -> dict:
         "session_id": row.session_id,
         "scenario_id": row.scenario_id,
         "group": row.group,
-        # Keep this column always populated so dashboard can directly display assigned prompt type.
         "prompt_type": row.prompt_type or row.group,
         "triggered_prompt_type": row.prompt_type,
         "generated_prompt": row.generated_prompt,
+        "risk_features": _parse_json_field(row.risk_features) or [],
         "original_comment": row.original_comment,
         "modified_comment": row.modified_comment,
         "final_submitted_comment": _resolve_final_submitted_comment(row),
         "final_action": _serialize_action(row.final_action),
+        "pre_survey": _parse_json_field(row.pre_survey),
+        "prompt_feedback": _parse_json_field(row.prompt_feedback),
+        "post_survey": _parse_json_field(row.post_survey),
+        "decision_latency_ms": row.decision_latency_ms,
         "status": row.status,
         "created_at": row.created_at.isoformat() if row.created_at else None,
         "updated_at": row.updated_at.isoformat() if row.updated_at else None,
+    }
+
+
+def _safe_average(values: list[int | float]) -> float | None:
+    return round(sum(values) / len(values), 2) if values else None
+
+
+def _build_feedback_insights(rows: list[ExperimentRecord]) -> dict:
+    prompt_feedback_rows = []
+    post_survey_rows = []
+    decision_latencies = []
+    modify_count = 0
+    completed_count = 0
+
+    for row in rows:
+        if row.status == ExperimentStatusEnum.COMPLETED.value:
+            completed_count += 1
+
+        action = _serialize_action(row.final_action)
+        if action == "modify":
+            modify_count += 1
+
+        if row.decision_latency_ms is not None:
+            decision_latencies.append(row.decision_latency_ms)
+
+        prompt_feedback = _parse_json_field(row.prompt_feedback)
+        if prompt_feedback:
+            prompt_feedback_rows.append(prompt_feedback)
+
+        post_survey = _parse_json_field(row.post_survey)
+        if post_survey:
+            post_survey_rows.append(post_survey)
+
+    helpfulness = [item.get("helpfulness") for item in prompt_feedback_rows if item.get("helpfulness")]
+    friendliness = [item.get("friendliness") for item in prompt_feedback_rows if item.get("friendliness")]
+    relevance = [item.get("relevance") for item in prompt_feedback_rows if item.get("relevance")]
+    reflection_gain = [item.get("reflection_gain") for item in post_survey_rows if item.get("reflection_gain")]
+    real_world_adoption = [item.get("real_world_adoption") for item in post_survey_rows if item.get("real_world_adoption")]
+
+    return {
+        "modify_rate": round(modify_count / completed_count, 4) if completed_count else None,
+        "avg_helpfulness": _safe_average(helpfulness),
+        "avg_friendliness": _safe_average(friendliness),
+        "avg_relevance": _safe_average(relevance),
+        "avg_reflection_gain": _safe_average(reflection_gain),
+        "avg_real_world_adoption": _safe_average(real_world_adoption),
+        "avg_decision_latency_ms": _safe_average(decision_latencies),
+        "feedback_count": len(post_survey_rows),
     }
 
 
@@ -169,6 +232,7 @@ def init_experiment(
         session_id=payload.session_id,
         scenario_id=payload.scenario_id,
         group=group,
+        pre_survey=json.dumps(payload.pre_survey.model_dump(), ensure_ascii=False) if payload.pre_survey else None,
         status=ExperimentStatusEnum.INITIALIZED.value,
     )
     db.add(record)
@@ -179,6 +243,32 @@ def init_experiment(
         group=group,
         scenario_id=payload.scenario_id,
     )
+
+
+@router.post("/feedback", response_model=ExperimentFeedbackResponse)
+def submit_experiment_feedback(
+    payload: ExperimentFeedbackRequest,
+    db: Session = Depends(dependencies.get_db),
+):
+    record = db.query(ExperimentRecord).filter(
+        ExperimentRecord.experiment_id == payload.experiment_id
+    ).first()
+    if not record:
+        raise HTTPException(status_code=404, detail="Experiment record not found.")
+
+    if record.status != ExperimentStatusEnum.COMPLETED.value:
+        raise HTTPException(status_code=400, detail="Experiment is not completed yet.")
+
+    if payload.prompt_feedback:
+        record.prompt_feedback = json.dumps(payload.prompt_feedback.model_dump(), ensure_ascii=False)
+    if payload.post_survey:
+        record.post_survey = json.dumps(payload.post_survey.model_dump(), ensure_ascii=False)
+    if payload.decision_latency_ms is not None:
+        record.decision_latency_ms = payload.decision_latency_ms
+
+    record.updated_at = datetime.datetime.utcnow()
+    db.commit()
+    return ExperimentFeedbackResponse(success=True)
 
 
 @router.get(
@@ -205,7 +295,7 @@ def update_prompt_allocation(
     weights = payload.model_dump()
     total_weight = sum(weights.values())
     if total_weight <= 0:
-        raise HTTPException(status_code=400, detail="至少需要一个提示类型的比例大于 0。")
+        raise HTTPException(status_code=400, detail="At least one prompt group must have a weight above 0.")
 
     config = _get_or_create_allocation_config(db)
     config.empathy_weight = weights["empathy"]
@@ -245,7 +335,12 @@ def get_dashboard_data(
         db.query(ExperimentRecord.final_action, func.count(ExperimentRecord.id)), scenario_id, group
     ).filter(ExperimentRecord.final_action.isnot(None)).group_by(ExperimentRecord.final_action).all()
 
-    latest_rows = filtered_query.order_by(ExperimentRecord.id.desc()).limit(limit).all()
+    scenario_distribution_rows = _apply_filters(
+        db.query(ExperimentRecord.scenario_id, func.count(ExperimentRecord.id)), scenario_id, group
+    ).group_by(ExperimentRecord.scenario_id).all()
+
+    filtered_rows = filtered_query.order_by(ExperimentRecord.id.desc()).all()
+    latest_rows = filtered_rows[:limit]
 
     return {
         "summary": {
@@ -259,7 +354,9 @@ def get_dashboard_data(
                 _serialize_action(action_name): count
                 for action_name, count in action_distribution_rows
             },
+            "scenarios": {scenario_name: count for scenario_name, count in scenario_distribution_rows},
         },
+        "insights": _build_feedback_insights(filtered_rows),
         "allocation": _serialize_allocation(_get_or_create_allocation_config(db)),
         "records": [_serialize_record(row) for row in latest_rows],
     }

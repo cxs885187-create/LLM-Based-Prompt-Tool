@@ -26,13 +26,22 @@ def _ensure_sqlite_compatibility() -> None:
         existing_columns = {
             row[1] for row in connection.execute(text("PRAGMA table_info(experiment_records)")).fetchall()
         }
-        if "status" not in existing_columns:
-            connection.execute(
-                text(
-                    "ALTER TABLE experiment_records "
-                    "ADD COLUMN status VARCHAR(20) NOT NULL DEFAULT 'initialized'"
+        column_specs = {
+            "status": "VARCHAR(20) NOT NULL DEFAULT 'initialized'",
+            "risk_features": "TEXT",
+            "pre_survey": "TEXT",
+            "prompt_feedback": "TEXT",
+            "post_survey": "TEXT",
+            "decision_latency_ms": "INTEGER",
+        }
+        for column_name, column_spec in column_specs.items():
+            if column_name not in existing_columns:
+                connection.execute(
+                    text(
+                        f"ALTER TABLE experiment_records "
+                        f"ADD COLUMN {column_name} {column_spec}"
+                    )
                 )
-            )
 
 
 # Bootstrap tables on the configured database connection.
