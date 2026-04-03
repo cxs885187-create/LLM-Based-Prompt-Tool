@@ -11,29 +11,42 @@
       </div>
     </div>
 
-    <div class="grid gap-6 lg:grid-cols-[0.9fr_1.1fr]">
+    <div class="grid gap-6 lg:grid-cols-[0.92fr_1.08fr]">
       <section class="panel p-6 md:p-8">
         <span class="eyebrow-pill">知情同意</span>
-        <h1 class="display-title mt-5 text-4xl font-semibold text-slate-900">在进入情境前，我们需要先完成研究说明。</h1>
+        <h1 class="display-title mt-5 text-4xl font-semibold text-slate-900 md:text-5xl">
+          进入情境测试之前，请先完成研究说明与基础前测。
+        </h1>
         <p class="mt-4 text-sm leading-7 text-slate-600 md:text-base">
-          本实验围绕大学生评论场景中的不文明表达干预展开。系统会记录你在模拟评论区中的输入、
-          提示响应、最终决策与简短反馈，仅用于研究分析与系统优化。
+          本实验围绕大学生评论场景中的不文明表达干预展开。系统会记录你在模拟评论区中的输入、提示反馈、
+          最终决策与简短问卷，仅用于课程研究分析与原型优化，不会连接真实社交平台。
         </p>
+
+        <div v-if="store.runtimeMode === 'offline' && store.runtimeNotice" class="status-banner mt-6">
+          <strong>当前为演示模式</strong>
+          <span>{{ store.runtimeNotice }}</span>
+        </div>
 
         <div class="divider-line my-6"></div>
 
         <div class="grid gap-4">
           <article class="panel-soft p-4">
             <p class="font-semibold text-slate-900">你将经历什么</p>
-            <p class="mt-2 text-sm leading-6 text-slate-500">阅读校园情境 → 输入评论 → 接收提示或直接发布 → 完成反馈问卷。</p>
+            <p class="mt-2 text-sm leading-6 text-slate-500">
+              阅读校园情境、输入评论、在必要时接收 AIGC 提示，再完成一组简短反馈量表。
+            </p>
           </article>
           <article class="panel-soft p-4">
             <p class="font-semibold text-slate-900">参与原则</p>
-            <p class="mt-2 text-sm leading-6 text-slate-500">完全自愿、可随时退出、不会连接真实社交账号、最终仍由你决定是否发布。</p>
+            <p class="mt-2 text-sm leading-6 text-slate-500">
+              完全自愿、可随时退出、不要求绑定真实账号，最终是否发布仍由你自己决定。
+            </p>
           </article>
           <article class="panel-soft p-4">
-            <p class="font-semibold text-slate-900">系统记录内容</p>
-            <p class="mt-2 text-sm leading-6 text-slate-500">评论原文、提示类型、修改结果、决策时间和提示接受度量表。</p>
+            <p class="font-semibold text-slate-900">研究记录内容</p>
+            <p class="mt-2 text-sm leading-6 text-slate-500">
+              包括评论原文、触发的提示类型、修改行为、决策时长、提示接受度和后测反馈。
+            </p>
           </article>
         </div>
 
@@ -49,7 +62,7 @@
             <span class="eyebrow-pill">前测与情境</span>
             <h2 class="mt-4 text-3xl font-semibold text-slate-900">先做一个轻量前测，再选择你要进入的评论场景。</h2>
           </div>
-          <span class="chip chip-navy">研究边界内功能新增</span>
+          <span class="chip chip-navy">限定在申报书范围内</span>
         </div>
 
         <div class="mt-6 grid gap-4 md:grid-cols-2">
@@ -108,7 +121,9 @@
           >
             <div class="flex items-center justify-between gap-3">
               <span class="chip" :class="selectedScenarioId === item.id ? 'bg-white/15 text-white' : 'chip-teal'">{{ item.topic }}</span>
-              <span class="text-xs font-semibold uppercase tracking-[0.16em]" :class="selectedScenarioId === item.id ? 'text-white/70' : 'text-slate-400'">风险 {{ item.riskLevel }}</span>
+              <span class="text-xs font-semibold uppercase tracking-[0.16em]" :class="selectedScenarioId === item.id ? 'text-white/70' : 'text-slate-400'">
+                风险 {{ item.riskLevel }}
+              </span>
             </div>
             <p class="mt-4 text-xl font-semibold">{{ item.title }}</p>
             <p class="mt-3 text-sm leading-6" :class="selectedScenarioId === item.id ? 'text-white/75' : 'text-slate-500'">

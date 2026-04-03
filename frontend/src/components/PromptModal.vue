@@ -12,9 +12,11 @@
         <header class="flex flex-wrap items-start justify-between gap-4">
           <div>
             <span class="eyebrow-pill">AIGC 干预提示</span>
-            <h3 :id="titleId" class="mt-3 text-3xl font-semibold text-slate-900">先别急着发，我们帮你把表达再修一遍。</h3>
+            <h3 :id="titleId" class="mt-3 text-3xl font-semibold text-slate-900">
+              先别急着发，我们帮你把表达再理一遍。
+            </h3>
             <p class="mt-2 text-sm leading-6 text-slate-500">
-              当前策略：{{ promptTypeLabel }} · 生成来源：{{ promptSourceLabel }}
+              当前策略：{{ promptTypeLabel }} / 生成来源：{{ promptSourceLabel }}
             </p>
           </div>
           <button
@@ -137,38 +139,14 @@ import { computed, nextTick, onBeforeUnmount, ref, watch } from "vue";
 const titleId = "prompt-dialog-title";
 
 const props = defineProps({
-  open: {
-    type: Boolean,
-    default: false
-  },
-  loading: {
-    type: Boolean,
-    default: false
-  },
-  promptText: {
-    type: String,
-    default: ""
-  },
-  promptType: {
-    type: String,
-    default: ""
-  },
-  promptSource: {
-    type: String,
-    default: ""
-  },
-  seedComment: {
-    type: String,
-    default: ""
-  },
-  originalComment: {
-    type: String,
-    default: ""
-  },
-  riskFeatures: {
-    type: Array,
-    default: () => []
-  }
+  open: { type: Boolean, default: false },
+  loading: { type: Boolean, default: false },
+  promptText: { type: String, default: "" },
+  promptType: { type: String, default: "" },
+  promptSource: { type: String, default: "" },
+  seedComment: { type: String, default: "" },
+  originalComment: { type: String, default: "" },
+  riskFeatures: { type: Array, default: () => [] }
 });
 
 const emit = defineEmits(["decision", "close"]);
@@ -184,16 +162,17 @@ const promptTypeLabel = computed(() => {
     consequence: "后果提示",
     normative: "规范提示",
     alternative: "替代表达提示",
-    control: "控制组提示"
+    control: "对照组提示"
   };
-  return labels[props.promptType] || "控制组提示";
+  return labels[props.promptType] || "对照组提示";
 });
 
 const promptSourceLabel = computed(() => {
   const labels = {
     llm: "大模型生成",
     fallback: "降级改写",
-    mock: "Mock 模式"
+    mock: "Mock 模式",
+    offline_heuristic: "本地演示模式"
   };
   return labels[props.promptSource] || "未知";
 });

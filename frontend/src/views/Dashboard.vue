@@ -6,7 +6,7 @@
         返回首页
       </button>
       <div class="flex flex-wrap items-center gap-2">
-        <button class="secondary-button" @click="changeAdminToken">更换令牌</button>
+        <button class="secondary-button" @click="changeAdminToken">设置管理令牌</button>
         <button class="primary-button" :disabled="store.loading.dashboard" @click="loadDashboard">
           {{ store.loading.dashboard ? "刷新中..." : "刷新数据" }}
         </button>
@@ -17,9 +17,11 @@
       <div class="flex flex-wrap items-start justify-between gap-4">
         <div>
           <span class="eyebrow-pill">Research Console</span>
-          <h1 class="display-title mt-5 text-4xl font-semibold text-slate-900 md:text-5xl">实验后台不只看记录，也看“提示到底有没有起作用”。</h1>
+          <h1 class="display-title mt-5 text-4xl font-semibold text-slate-900 md:text-5xl">
+            实验后台不只看记录，也看“提示到底有没有起作用”。
+          </h1>
           <p class="mt-4 max-w-3xl text-sm leading-7 text-slate-600 md:text-base">
-            这一版后台参考了 Linear 的信息秩序和 Dovetail 的洞察感，把申报书里提到的行为结果、提示评价、反思收益和决策时长放到同一个研究视图里。
+            这一版后台把行为结果、提示评价、后测反馈和决策时长集中到同一页中。若线上接口暂时不可用，也会自动回落到本地演示数据。
           </p>
         </div>
         <div class="rounded-[24px] border border-slate-200 bg-white/80 px-5 py-4">
@@ -27,20 +29,26 @@
           <p class="mt-3 text-3xl font-semibold text-slate-900">{{ insights.feedback_count ?? 0 }}</p>
         </div>
       </div>
+
+      <div v-if="store.runtimeMode === 'offline' && store.runtimeNotice" class="status-banner mt-6">
+        <strong>当前为演示模式</strong>
+        <span>{{ store.runtimeNotice }}</span>
+      </div>
+
       <p v-if="store.lastError" aria-live="polite" class="mt-4 text-sm font-semibold text-amber-700">{{ store.lastError }}</p>
     </header>
 
     <section class="mt-6 grid gap-4 md:grid-cols-3">
       <StatsCard label="总记录数" :value="summary.total_records" hint="所有已初始化实验" />
       <StatsCard label="已完成数" :value="summary.completed_records" hint="完成评论与决策提交" />
-      <StatsCard label="触发提示数" :value="summary.uncivil_triggered_records" hint="出现过 AIGC 干预提示" />
+      <StatsCard label="触发提示数" :value="summary.uncivil_triggered_records" hint="出现 AIGC 干预的记录" />
     </section>
 
     <section class="mt-6 grid gap-4 lg:grid-cols-4">
       <StatsCard label="修改率" :value="formatPercent(insights.modify_rate)" hint="最终选择修改后发布的占比" />
-      <StatsCard label="平均帮助感" :value="formatScore(insights.avg_helpfulness)" hint="提示是否真的帮到了用户" />
+      <StatsCard label="平均帮助感" :value="formatScore(insights.avg_helpfulness)" hint="提示是否真正帮助了参与者" />
       <StatsCard label="平均贴合度" :value="formatScore(insights.avg_relevance)" hint="提示和原评论的匹配程度" />
-      <StatsCard label="平均反思收益" :value="formatScore(insights.avg_reflection_gain)" hint="是否提升了发布前复核意愿" />
+      <StatsCard label="平均反思收益" :value="formatScore(insights.avg_reflection_gain)" hint="是否提升发布前复核意愿" />
     </section>
 
     <div class="mt-6 grid gap-6 lg:grid-cols-[0.94fr_1.06fr]">
@@ -65,17 +73,21 @@
           </label>
         </div>
 
-        <p class="mt-3 text-xs text-slate-500">设为 `1:1:1:1:1` 时，系统按加权均摊随机分配五种提示类型。</p>
+        <p class="mt-3 text-xs text-slate-500">设置为 `1:1:1:1:1` 时，系统会等概率分配五种提示类型。</p>
         <p v-if="allocationError" aria-live="polite" class="mt-2 text-sm font-semibold text-rose-600">{{ allocationError }}</p>
 
         <div class="mt-5 flex flex-wrap gap-3">
           <button class="secondary-button" :disabled="store.loading.allocation" @click="setEqualAllocation">
             一键设为 1:1:1:1:1
           </button>
-          <button class="primary-button" :disabled="store.loading.allocation" @click="saveAllocation">
+          <button class="primary-button" :disabled="store.loading.allocation || !canSaveAllocation" @click="saveAllocation">
             {{ store.loading.allocation ? "保存中..." : "保存比例配置" }}
           </button>
         </div>
+
+        <p v-if="!canSaveAllocation" class="mt-3 text-xs text-slate-500">
+          当前没有可用的在线后台或管理令牌，暂时只能查看本地演示数据。
+        </p>
 
         <div class="mt-5 rounded-[22px] bg-white/70 p-4">
           <p class="text-sm font-semibold text-slate-900">最新归一化比例</p>
@@ -101,7 +113,7 @@
               <option value="consequence">后果组</option>
               <option value="normative">规范组</option>
               <option value="alternative">替代表达组</option>
-              <option value="control">控制组</option>
+              <option value="control">对照组</option>
             </select>
           </label>
 
@@ -163,7 +175,7 @@
 
       <div class="panel p-5">
         <p class="section-label">组别分布</p>
-        <h2 class="mt-2 text-2xl font-semibold text-slate-900">实验组抽样</h2>
+        <h2 class="mt-2 text-2xl font-semibold text-slate-900">实验分组抽样</h2>
         <div class="mt-4 grid gap-3">
           <DistributionBar
             v-for="item in groupDistribution"
@@ -217,7 +229,7 @@
               <td class="text-xs text-slate-500">{{ row.experiment_id }}</td>
               <td>
                 <p class="font-semibold text-slate-900">{{ formatScenario(row.scenario_id) }}</p>
-                <p class="mt-1 text-sm text-slate-500">{{ formatGroup(row.group) }} · {{ formatPromptType(row.prompt_type) }}</p>
+                <p class="mt-1 text-sm text-slate-500">{{ formatGroup(row.group) }} / {{ formatPromptType(row.prompt_type) }}</p>
               </td>
               <td>
                 <div class="flex max-w-[220px] flex-wrap gap-2">
@@ -265,47 +277,12 @@ const ratioFields = [
   { key: "consequence", label: "后果组" },
   { key: "normative", label: "规范组" },
   { key: "alternative", label: "替代表达组" },
-  { key: "control", label: "控制组" }
+  { key: "control", label: "对照组" }
 ];
 
-const filters = reactive({
-  group: "",
-  scenarioId: "",
-  limit: 100
-});
-
-const allocationDraft = reactive({
-  empathy: 1,
-  consequence: 1,
-  normative: 1,
-  alternative: 1,
-  control: 1
-});
-
+const filters = reactive({ group: "", scenarioId: "", limit: 100 });
+const allocationDraft = reactive({ empathy: 1, consequence: 1, normative: 1, alternative: 1, control: 1 });
 const allocationError = ref("");
-
-function ensureAdminToken() {
-  let token = sessionStorage.getItem(ADMIN_TOKEN_STORAGE_KEY) || "";
-  if (!token.trim()) {
-    token = (window.prompt("请输入管理令牌（Admin Token）：") || "").trim();
-    if (!token) {
-      store.lastError = "未提供管理令牌，无法访问仪表盘。";
-      router.replace("/");
-      return false;
-    }
-    sessionStorage.setItem(ADMIN_TOKEN_STORAGE_KEY, token);
-  }
-  return true;
-}
-
-function changeAdminToken() {
-  const token = (window.prompt("请输入新的管理令牌：") || "").trim();
-  if (!token) {
-    return;
-  }
-  sessionStorage.setItem(ADMIN_TOKEN_STORAGE_KEY, token);
-  loadDashboard();
-}
 
 const summary = computed(() => store.dashboard.summary || {
   total_records: 0,
@@ -315,35 +292,22 @@ const summary = computed(() => store.dashboard.summary || {
 
 const insights = computed(() => store.dashboard.insights || {});
 const records = computed(() => store.dashboard.records || []);
-const distributions = computed(() => store.dashboard.distributions || {
-  groups: {},
-  actions: {},
-  scenarios: {}
-});
+const distributions = computed(() => store.dashboard.distributions || { groups: {}, actions: {}, scenarios: {} });
 const allocation = computed(() => store.dashboard.allocation || {
-  weights: {
-    empathy: 1,
-    consequence: 1,
-    normative: 1,
-    alternative: 1,
-    control: 1
-  },
-  normalized_ratio: {
-    empathy: 0.2,
-    consequence: 0.2,
-    normative: 0.2,
-    alternative: 0.2,
-    control: 0.2
-  },
+  weights: { empathy: 1, consequence: 1, normative: 1, alternative: 1, control: 1 },
+  normalized_ratio: { empathy: 0.2, consequence: 0.2, normative: 0.2, alternative: 0.2, control: 0.2 },
   total_weight: 5
 });
 
 const currentTotalWeight = computed(() => Object.values(allocationDraft).reduce((sum, value) => sum + Number(value || 0), 0));
+const canSaveAllocation = computed(
+  () => store.runtimeMode === "online" && Boolean((sessionStorage.getItem(ADMIN_TOKEN_STORAGE_KEY) || "").trim())
+);
 
 const ratioPreview = computed(() => {
   const ratio = allocation.value.normalized_ratio || {};
   return ratioFields
-    .map((item) => `${item.label}${Math.round((Number(ratio[item.key]) || 0) * 100)}%`)
+    .map((item) => `${item.label} ${Math.round((Number(ratio[item.key]) || 0) * 100)}%`)
     .join(" / ");
 });
 
@@ -377,6 +341,30 @@ function sanitizeAllocationPayload() {
   return payload;
 }
 
+function ensureAdminToken() {
+  let token = sessionStorage.getItem(ADMIN_TOKEN_STORAGE_KEY) || "";
+  if (token.trim()) {
+    return true;
+  }
+
+  token = (window.prompt("请输入管理令牌（Admin Token）：") || "").trim();
+  if (!token) {
+    return false;
+  }
+
+  sessionStorage.setItem(ADMIN_TOKEN_STORAGE_KEY, token);
+  return true;
+}
+
+function changeAdminToken() {
+  const token = (window.prompt("请输入新的管理令牌：") || "").trim();
+  if (!token) {
+    return;
+  }
+  sessionStorage.setItem(ADMIN_TOKEN_STORAGE_KEY, token);
+  loadDashboard();
+}
+
 function setEqualAllocation() {
   allocationError.value = "";
   for (const item of ratioFields) {
@@ -386,6 +374,13 @@ function setEqualAllocation() {
 
 async function saveAllocation() {
   allocationError.value = "";
+
+  if (!canSaveAllocation.value) {
+    if (!ensureAdminToken()) {
+      allocationError.value = "未提供管理令牌，无法保存在线分组比例。";
+      return;
+    }
+  }
 
   const payload = sanitizeAllocationPayload();
   const total = Object.values(payload).reduce((sum, value) => sum + value, 0);
@@ -422,7 +417,7 @@ function formatGroup(value) {
     consequence: "后果组",
     normative: "规范组",
     alternative: "替代表达组",
-    control: "控制组"
+    control: "对照组"
   };
   return labels[value] || value || "-";
 }
@@ -481,25 +476,16 @@ function formatLatency(value) {
 }
 
 async function loadDashboard() {
-  if (!ensureAdminToken()) {
-    return;
-  }
-
-  try {
-    await store.fetchDashboard({
-      group: filters.group,
-      scenarioId: filters.scenarioId,
-      limit: filters.limit
-    });
-    syncAllocationDraft();
-  } catch (error) {
-    allocationError.value = error.message;
-  }
+  allocationError.value = "";
+  await store.fetchDashboard({
+    group: filters.group,
+    scenarioId: filters.scenarioId,
+    limit: filters.limit
+  });
+  syncAllocationDraft();
 }
 
 onMounted(() => {
-  if (ensureAdminToken()) {
-    loadDashboard();
-  }
+  loadDashboard();
 });
 </script>

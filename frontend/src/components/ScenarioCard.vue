@@ -18,7 +18,7 @@
           <div class="flex flex-wrap items-center gap-2 text-sm">
             <span class="font-semibold text-slate-900">{{ scenario.authorName || "匿名用户" }}</span>
             <span class="text-slate-500">{{ scenario.authorHandle || "@anonymous" }}</span>
-            <span class="text-slate-400">·</span>
+            <span class="text-slate-400">/</span>
             <span class="text-slate-500">{{ scenario.postTime || "刚刚" }}</span>
           </div>
 
@@ -56,7 +56,7 @@
             <div class="flex flex-wrap items-center gap-2 text-xs">
               <span class="font-semibold text-slate-800">{{ reply.name }}</span>
               <span class="text-slate-500">{{ reply.handle }}</span>
-              <span class="text-slate-400">·</span>
+              <span class="text-slate-400">/</span>
               <span class="text-slate-500">{{ reply.time }}</span>
             </div>
             <p class="mt-1 text-sm leading-6 text-slate-700">{{ reply.text }}</p>

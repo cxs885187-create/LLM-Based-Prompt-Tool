@@ -11,15 +11,20 @@
       </div>
     </div>
 
-    <div class="grid gap-6 lg:grid-cols-[1.1fr_0.52fr]">
+    <div v-if="store.runtimeMode === 'offline' && store.runtimeNotice" class="status-banner mb-5">
+      <strong>当前为演示模式</strong>
+      <span>{{ store.runtimeNotice }}</span>
+    </div>
+
+    <div class="grid gap-6 lg:grid-cols-[1.08fr_0.56fr]">
       <section class="grid gap-4">
         <div class="panel flex flex-wrap items-center justify-between gap-4 p-4">
           <div class="flex flex-wrap items-center gap-3 text-sm text-slate-600">
             <span class="chip chip-navy">实验 ID {{ store.experimentId }}</span>
-            <span class="chip chip-teal">组别 {{ groupLabel }}</span>
+            <span class="chip chip-teal">分组 {{ groupLabel }}</span>
             <span class="chip chip-gold">提示类型 {{ store.promptTypeLabel }}</span>
           </div>
-          <p class="text-sm text-slate-500">先按你的直觉评论，系统只在必要时介入。</p>
+          <p class="text-sm text-slate-500">先按你的直觉评论，系统只会在必要时介入。</p>
         </div>
 
         <ScenarioCard v-if="store.currentScenario" :scenario="store.currentScenario" />
@@ -33,9 +38,11 @@
       <aside class="grid gap-4 self-start lg:sticky lg:top-6">
         <section class="panel p-5">
           <p class="section-label">研究侧栏</p>
-          <h2 class="mt-3 text-2xl font-semibold text-slate-900">这不是在限制表达，而是在提供一个“重新组织语气”的台阶。</h2>
+          <h2 class="mt-3 text-2xl font-semibold text-slate-900">
+            这不是在限制表达，而是在提供一个“重新组织语气”的台阶。
+          </h2>
           <p class="mt-3 text-sm leading-7 text-slate-600">
-            根据申报书，这一原型重点记录评论修改行为、提示接受度、决策时间与反思收益。你始终保有最终决定权。
+            根据申报书，当前原型重点记录评论修改行为、提示接受度、决策时长与反思收益。你始终保有最终决定权。
           </p>
         </section>
 
@@ -47,14 +54,14 @@
               <span class="font-semibold text-slate-900">{{ store.isUncivil ? "已触发" : "暂未触发" }}</span>
             </div>
             <div class="flex items-center justify-between gap-3 rounded-[20px] bg-white/70 px-4 py-3">
-              <span class="text-sm text-slate-500">风险特征</span>
+              <span class="text-sm text-slate-500">风险特征数</span>
               <span class="font-semibold text-slate-900">{{ store.riskFeatures.length ? `${store.riskFeatures.length} 项` : "待检测" }}</span>
             </div>
             <div class="rounded-[20px] bg-white/70 px-4 py-3">
               <p class="text-sm text-slate-500">识别到的表达特征</p>
               <div class="mt-3 flex flex-wrap gap-2">
                 <span v-for="feature in store.riskFeatures" :key="feature" class="chip chip-coral">{{ feature }}</span>
-                <span v-if="store.riskFeatures.length === 0" class="text-sm text-slate-400">提交评论后显示。</span>
+                <span v-if="store.riskFeatures.length === 0" class="text-sm text-slate-400">提交评论后显示</span>
               </div>
             </div>
           </div>
@@ -100,7 +107,7 @@ const groupLabel = computed(() => {
     consequence: "后果组",
     normative: "规范组",
     alternative: "替代表达组",
-    control: "控制组"
+    control: "对照组"
   };
   return labels[store.group] || "待分配";
 });
@@ -108,19 +115,9 @@ const groupLabel = computed(() => {
 function buildSuggestedComment(rawComment) {
   const normalized = (rawComment || "").trim();
   if (!normalized) {
-    return "我有不同看法，我们可以更理性地讨论这件事。";
+    return "我有不同看法，但希望我们能基于事实继续讨论这件事。";
   }
-  return `我有不同看法：${normalized}。希望我们能更尊重地交流。`;
-}
-
-function normalizeStateError(message) {
-  if (
-    message.includes("Invalid experiment state") ||
-    message.includes("实验状态无效")
-  ) {
-    return "当前实验已经完成内容检测。同一个实验不能重复点击检测，请在提示面板里完成选择，或返回说明页重新开始。";
-  }
-  return message;
+  return `我对这件事有些不同意见。${normalized}。如果继续讨论，我更希望把重点放在事实和解决办法上。`;
 }
 
 async function handleCommentSubmit(commentText) {
@@ -137,7 +134,7 @@ async function handleCommentSubmit(commentText) {
     suggestionSeed.value = result.prompt_text || buildSuggestedComment(commentText);
     showPromptModal.value = true;
   } catch (error) {
-    errorMessage.value = normalizeStateError(error.message);
+    errorMessage.value = error.message;
     if (store.isUncivil && store.promptText) {
       suggestionSeed.value = store.promptText;
       showPromptModal.value = true;
