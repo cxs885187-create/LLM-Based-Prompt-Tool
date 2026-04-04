@@ -599,17 +599,17 @@ onBeforeUnmount(() => {
   position: relative;
   min-height: 100vh;
   overflow: hidden;
-  background: #040507;
-  color: #e7e5e4;
+  background: #eef1f4;
+  color: #18212b;
 }
 
 .hud-backdrop {
   position: absolute;
   inset: 0;
   background:
-    linear-gradient(180deg, rgba(3, 7, 18, 0.32), rgba(2, 6, 23, 0.82)),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.38), rgba(232, 236, 240, 0.86)),
     url("https://images.unsplash.com/photo-1497366754035-f200968a6e72?auto=format&fit=crop&w=1800&q=80") center/cover;
-  filter: blur(16px) brightness(0.42);
+  filter: blur(16px) grayscale(1) brightness(0.92);
   transform: scale(1.08);
 }
 
@@ -617,7 +617,7 @@ onBeforeUnmount(() => {
   position: absolute;
   border-radius: 999px;
   filter: blur(110px);
-  opacity: 0.44;
+  opacity: 0.5;
 }
 
 .hud-orb-a {
@@ -625,7 +625,7 @@ onBeforeUnmount(() => {
   left: -4rem;
   width: 18rem;
   height: 18rem;
-  background: rgba(34, 211, 238, 0.22);
+  background: rgba(255, 255, 255, 0.78);
 }
 
 .hud-orb-b {
@@ -633,7 +633,7 @@ onBeforeUnmount(() => {
   right: -2rem;
   width: 16rem;
   height: 16rem;
-  background: rgba(251, 191, 36, 0.18);
+  background: rgba(185, 193, 202, 0.42);
 }
 
 .hud-orb-c {
@@ -641,7 +641,7 @@ onBeforeUnmount(() => {
   left: 28%;
   width: 20rem;
   height: 20rem;
-  background: rgba(148, 163, 184, 0.18);
+  background: rgba(210, 216, 222, 0.5);
 }
 
 .hud-stage {
@@ -667,21 +667,21 @@ onBeforeUnmount(() => {
   flex-direction: column;
   gap: 0.75rem;
   padding: 1rem 0.75rem;
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(68, 77, 89, 0.12);
   border-radius: 2rem;
-  background: rgba(17, 24, 39, 0.26);
+  background: rgba(255, 255, 255, 0.38);
   backdrop-filter: blur(26px);
   box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.08),
-    0 1rem 2.8rem rgba(2, 6, 23, 0.42);
+    inset 0 1px 0 rgba(255, 255, 255, 0.72),
+    0 1rem 2.8rem rgba(65, 76, 92, 0.12);
 }
 
 .hud-side-button,
 .hud-top-button,
 .hud-cyan-button {
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  background: rgba(255, 255, 255, 0.04);
-  color: #d6d3d1;
+  border: 1px solid rgba(68, 77, 89, 0.12);
+  background: rgba(255, 255, 255, 0.38);
+  color: #2f3a47;
   cursor: pointer;
   transition:
     border-color 180ms ease,
@@ -704,19 +704,19 @@ onBeforeUnmount(() => {
 .hud-top-button:hover,
 .hud-cyan-button:hover {
   transform: translateY(-1px);
-  border-color: rgba(255, 255, 255, 0.18);
-  box-shadow: 0 0 0.75rem rgba(251, 191, 36, 0.12);
+  border-color: rgba(31, 41, 55, 0.18);
+  box-shadow: 0 0 1rem rgba(15, 23, 42, 0.08);
 }
 
 .hud-side-button.active {
-  color: #f3f4f6;
-  background: rgba(251, 191, 36, 0.14);
-  border-color: rgba(251, 191, 36, 0.34);
+  color: #f8fafc;
+  background: linear-gradient(135deg, rgba(50, 60, 74, 0.92), rgba(28, 36, 46, 0.94));
+  border-color: rgba(17, 24, 39, 0.24);
 }
 
 .hud-sidebar-badge {
   margin-top: 0.5rem;
-  color: rgba(226, 232, 240, 0.72);
+  color: rgba(71, 85, 105, 0.72);
   font-size: 0.74rem;
   text-align: center;
 }
@@ -729,12 +729,12 @@ onBeforeUnmount(() => {
 .hud-browser-bar,
 .hud-panel,
 .hud-hero-panel {
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  background: rgba(15, 23, 42, 0.28);
+  border: 1px solid rgba(68, 77, 89, 0.12);
+  background: rgba(255, 255, 255, 0.34);
   backdrop-filter: blur(32px);
   box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.08),
-    0 1.5rem 3rem rgba(2, 6, 23, 0.34);
+    inset 0 1px 0 rgba(255, 255, 255, 0.78),
+    0 1.5rem 3rem rgba(95, 107, 122, 0.12);
 }
 
 .hud-browser-bar {
@@ -757,7 +757,7 @@ onBeforeUnmount(() => {
   width: 0.85rem;
   height: 0.85rem;
   border-radius: 999px;
-  background: rgba(255, 255, 255, 0.18);
+  background: rgba(71, 85, 105, 0.22);
 }
 
 .hud-browser-address {
@@ -765,8 +765,8 @@ onBeforeUnmount(() => {
   flex: 1;
   padding: 0.68rem 1rem;
   border-radius: 999px;
-  background: rgba(15, 23, 42, 0.42);
-  color: #cbd5e1;
+  background: rgba(255, 255, 255, 0.48);
+  color: #475569;
   font-family: "Space Grotesk", "SFMono-Regular", Consolas, monospace;
   font-size: 0.84rem;
   text-align: center;
@@ -790,10 +790,10 @@ onBeforeUnmount(() => {
 }
 
 .hud-cyan-button {
-  color: #e0f2fe;
-  border-color: rgba(34, 211, 238, 0.4);
-  background: linear-gradient(135deg, rgba(14, 116, 144, 0.78), rgba(6, 182, 212, 0.82));
-  box-shadow: 0 0 1.1rem rgba(34, 211, 238, 0.18);
+  color: #f8fafc;
+  border-color: rgba(17, 24, 39, 0.18);
+  background: linear-gradient(135deg, rgba(52, 61, 73, 0.95), rgba(28, 36, 46, 0.96));
+  box-shadow: 0 0 1rem rgba(15, 23, 42, 0.08);
 }
 
 .hud-cyan-button:disabled,
@@ -820,7 +820,7 @@ onBeforeUnmount(() => {
 .hud-card-label,
 .hud-runtime-label {
   margin: 0;
-  color: #fbbf24;
+  color: rgba(71, 85, 105, 0.76);
   font-size: 0.72rem;
   font-weight: 800;
   letter-spacing: 0.24em;
@@ -830,7 +830,7 @@ onBeforeUnmount(() => {
 .hud-hero-head h1,
 .hud-section-head h2 {
   margin: 0.75rem 0 0;
-  color: #f8fafc;
+  color: #0f172a;
   font-size: clamp(2rem, 4vw, 3.2rem);
   line-height: 0.98;
   letter-spacing: -0.05em;
@@ -839,7 +839,7 @@ onBeforeUnmount(() => {
 .hud-hero-copy {
   margin: 1rem 0 0;
   max-width: 48rem;
-  color: rgba(226, 232, 240, 0.76);
+  color: rgba(51, 65, 85, 0.78);
   line-height: 1.9;
 }
 
@@ -850,7 +850,7 @@ onBeforeUnmount(() => {
   min-width: 18rem;
   padding: 1rem 1.05rem;
   border-radius: 1.4rem;
-  background: rgba(15, 23, 42, 0.38);
+  background: rgba(255, 255, 255, 0.42);
 }
 
 .hud-runtime-card strong,
@@ -859,12 +859,12 @@ onBeforeUnmount(() => {
 .hud-distribution-text strong,
 .hud-kpi-card strong,
 .hud-profile-list strong {
-  color: #f8fafc;
+  color: #111827;
 }
 
 .hud-runtime-card p {
   margin: 0.35rem 0 0;
-  color: rgba(226, 232, 240, 0.68);
+  color: rgba(71, 85, 105, 0.72);
   font-size: 0.88rem;
   line-height: 1.7;
 }
@@ -875,13 +875,13 @@ onBeforeUnmount(() => {
   height: 0.75rem;
   margin-top: 0.25rem;
   border-radius: 999px;
-  background: #22d3ee;
-  box-shadow: 0 0 1rem rgba(34, 211, 238, 0.52);
+  background: #475569;
+  box-shadow: 0 0 1rem rgba(71, 85, 105, 0.18);
 }
 
 .hud-runtime-dot.offline {
-  background: #fbbf24;
-  box-shadow: 0 0 1rem rgba(251, 191, 36, 0.52);
+  background: #94a3b8;
+  box-shadow: 0 0 1rem rgba(148, 163, 184, 0.18);
 }
 
 .hud-alert {
@@ -891,8 +891,8 @@ onBeforeUnmount(() => {
   margin-top: 1.1rem;
   padding: 0.95rem 1rem;
   border-radius: 1.2rem;
-  background: rgba(251, 191, 36, 0.12);
-  color: #f8e7b6;
+  background: rgba(226, 232, 240, 0.7);
+  color: #334155;
 }
 
 .hud-alert strong {
@@ -913,8 +913,8 @@ onBeforeUnmount(() => {
 .hud-preview-box,
 .hud-record-item,
 .hud-profile-list div {
-  border: 1px solid rgba(255, 255, 255, 0.07);
-  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(68, 77, 89, 0.1);
+  background: rgba(255, 255, 255, 0.42);
 }
 
 .hud-stat-card {
@@ -925,7 +925,7 @@ onBeforeUnmount(() => {
 .hud-stat-card strong {
   display: block;
   margin-top: 0.8rem;
-  color: #f8fafc;
+  color: #0f172a;
   font-family: "Space Grotesk", "SFMono-Regular", Consolas, monospace;
   font-size: clamp(1.8rem, 3vw, 2.8rem);
   letter-spacing: -0.04em;
@@ -937,7 +937,7 @@ onBeforeUnmount(() => {
 .hud-empty-state {
   display: block;
   margin-top: 0.45rem;
-  color: rgba(226, 232, 240, 0.62);
+  color: rgba(71, 85, 105, 0.72);
   font-size: 0.84rem;
   line-height: 1.7;
 }
@@ -965,9 +965,9 @@ onBeforeUnmount(() => {
   min-height: 2.2rem;
   padding: 0 0.9rem;
   border-radius: 999px;
-  border: 1px solid rgba(251, 191, 36, 0.18);
-  background: rgba(251, 191, 36, 0.08);
-  color: #fcd34d;
+  border: 1px solid rgba(68, 77, 89, 0.12);
+  background: rgba(255, 255, 255, 0.46);
+  color: #475569;
   font-size: 0.76rem;
   font-weight: 700;
   letter-spacing: 0.08em;
@@ -983,9 +983,9 @@ onBeforeUnmount(() => {
   padding: 1.2rem;
   border-radius: 1.7rem;
   background:
-    linear-gradient(rgba(255, 255, 255, 0.06) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255, 255, 255, 0.06) 1px, transparent 1px),
-    rgba(15, 23, 42, 0.26);
+    linear-gradient(rgba(71, 85, 105, 0.08) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(71, 85, 105, 0.08) 1px, transparent 1px),
+    rgba(255, 255, 255, 0.36);
   background-size: 100% 20%, 10% 100%, auto;
 }
 
@@ -1001,7 +1001,7 @@ onBeforeUnmount(() => {
   width: 100%;
   height: 10rem;
   border-radius: 999px;
-  background: rgba(255, 255, 255, 0.06);
+  background: rgba(148, 163, 184, 0.2);
   overflow: hidden;
 }
 
@@ -1009,17 +1009,17 @@ onBeforeUnmount(() => {
   position: absolute;
   inset: auto 0 0;
   border-radius: 999px;
-  background: linear-gradient(180deg, rgba(251, 191, 36, 0.42), rgba(34, 211, 238, 0.9));
-  box-shadow: 0 0 1rem rgba(34, 211, 238, 0.24);
+  background: linear-gradient(180deg, rgba(148, 163, 184, 0.78), rgba(51, 65, 85, 0.92));
+  box-shadow: 0 0 1rem rgba(71, 85, 105, 0.12);
 }
 
 .hud-chart-column strong {
-  color: #e2e8f0;
+  color: #334155;
   font-family: "Space Grotesk", "SFMono-Regular", Consolas, monospace;
 }
 
 .hud-chart-column span {
-  color: rgba(226, 232, 240, 0.72);
+  color: rgba(71, 85, 105, 0.7);
   font-size: 0.82rem;
   text-align: center;
 }
@@ -1047,7 +1047,7 @@ onBeforeUnmount(() => {
 .hud-distribution-text span,
 .hud-record-subtitle,
 .hud-record-time {
-  color: rgba(226, 232, 240, 0.64);
+  color: rgba(71, 85, 105, 0.74);
   font-size: 0.82rem;
 }
 
@@ -1055,6 +1055,7 @@ onBeforeUnmount(() => {
   display: block;
   margin-top: 0.55rem;
   font-size: 1.3rem;
+  color: #111827;
   font-family: "Space Grotesk", "SFMono-Regular", Consolas, monospace;
 }
 
@@ -1076,7 +1077,7 @@ onBeforeUnmount(() => {
 
 .hud-form-grid span,
 .hud-allocation-grid span {
-  color: #cbd5e1;
+  color: #334155;
   font-size: 0.84rem;
   font-weight: 600;
 }
@@ -1086,17 +1087,17 @@ onBeforeUnmount(() => {
   width: 100%;
   min-height: 3rem;
   padding: 0 0.95rem;
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(68, 77, 89, 0.12);
   border-radius: 1rem;
-  background: rgba(2, 6, 23, 0.3);
-  color: #f8fafc;
+  background: rgba(255, 255, 255, 0.52);
+  color: #0f172a;
   outline: none;
 }
 
 .hud-form-grid select:focus,
 .hud-allocation-grid input:focus {
-  border-color: rgba(34, 211, 238, 0.42);
-  box-shadow: 0 0 0 0.18rem rgba(34, 211, 238, 0.12);
+  border-color: rgba(71, 85, 105, 0.28);
+  box-shadow: 0 0 0 0.18rem rgba(148, 163, 184, 0.16);
 }
 
 .hud-profile-list {
@@ -1129,7 +1130,7 @@ onBeforeUnmount(() => {
 
 .hud-error {
   margin-top: 0.8rem;
-  color: #fca5a5;
+  color: #475569;
   font-size: 0.9rem;
 }
 
@@ -1172,7 +1173,7 @@ onBeforeUnmount(() => {
 .hud-distribution-bar {
   height: 0.55rem;
   border-radius: 999px;
-  background: rgba(255, 255, 255, 0.06);
+  background: rgba(148, 163, 184, 0.18);
   overflow: hidden;
 }
 
@@ -1180,7 +1181,7 @@ onBeforeUnmount(() => {
   display: block;
   height: 100%;
   border-radius: 999px;
-  background: linear-gradient(90deg, rgba(251, 191, 36, 0.6), rgba(34, 211, 238, 0.85));
+  background: linear-gradient(90deg, rgba(148, 163, 184, 0.78), rgba(71, 85, 105, 0.92));
 }
 
 .hud-record-panel {
@@ -1211,7 +1212,7 @@ onBeforeUnmount(() => {
 
 .hud-record-title {
   margin: 0;
-  color: #f8fafc;
+  color: #111827;
   font-size: 1.05rem;
   font-weight: 700;
 }
@@ -1226,7 +1227,7 @@ onBeforeUnmount(() => {
 
 .hud-record-comment {
   margin: 0.9rem 0 0;
-  color: rgba(226, 232, 240, 0.78);
+  color: rgba(51, 65, 85, 0.78);
   line-height: 1.85;
 }
 
@@ -1242,8 +1243,8 @@ onBeforeUnmount(() => {
   min-height: 2rem;
   padding: 0 0.8rem;
   border-radius: 999px;
-  background: rgba(251, 191, 36, 0.08);
-  color: #f8d883;
+  background: rgba(226, 232, 240, 0.84);
+  color: #475569;
   font-size: 0.78rem;
 }
 
@@ -1254,13 +1255,13 @@ onBeforeUnmount(() => {
 
 .hud-record-decision strong {
   display: block;
-  color: #67e8f9;
+  color: #0f172a;
 }
 
 .hud-record-decision span {
   display: block;
   margin-top: 0.35rem;
-  color: rgba(226, 232, 240, 0.62);
+  color: rgba(71, 85, 105, 0.72);
   font-size: 0.82rem;
   line-height: 1.7;
 }
@@ -1269,7 +1270,7 @@ onBeforeUnmount(() => {
   padding: 1.25rem;
   border-radius: 1.2rem;
   text-align: center;
-  background: rgba(255, 255, 255, 0.04);
+  background: rgba(255, 255, 255, 0.4);
 }
 
 @keyframes hud-float {
