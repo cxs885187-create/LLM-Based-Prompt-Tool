@@ -1,147 +1,199 @@
 <template>
-  <main class="landing-page min-h-screen">
-    <section class="landing-topbar">
-      <div class="mx-auto flex w-full max-w-7xl items-center justify-between gap-3 px-4 py-3 text-sm sm:px-8">
-        <p>Research prototype for the project “评心而论”</p>
-        <button class="landing-topbar-link" @click="enterParticipant">立即进入测试</button>
+  <main class="editorial-page">
+    <section class="editorial-marquee">
+      <div class="editorial-container editorial-marquee-inner">
+        <p>Research Prototype for “评”心而论</p>
+        <button class="editorial-inline-link" @click="enterParticipant">进入实验</button>
       </div>
     </section>
 
-    <section class="mx-auto w-full max-w-7xl px-4 pb-8 pt-4 sm:px-8">
-      <header class="landing-nav">
-        <button class="landing-brand" @click="router.push('/')">
-          <span class="landing-brand-mark">评</span>
+    <header class="editorial-container editorial-nav-wrap">
+      <nav class="editorial-nav">
+        <button class="editorial-brand" @click="router.push('/')">
+          <span class="editorial-brand-mark">评</span>
           <span>
             <strong>评心 Lab</strong>
-            <small>AIGC 评论干预实验</small>
+            <small>AIGC 个性化提示干预实验</small>
           </span>
         </button>
 
-        <nav class="landing-nav-links">
+        <div class="editorial-links">
           <a href="#overview">项目概览</a>
-          <a href="#flow">参与流程</a>
-          <a href="#evidence">研究重点</a>
-        </nav>
-
-        <div class="flex items-center gap-3">
-          <button class="secondary-button" @click="enterDeveloper">研究后台</button>
-          <button class="primary-button" @click="enterParticipant">开始测试</button>
+          <a href="#flow">研究流程</a>
+          <a href="#feed">设计重点</a>
         </div>
-      </header>
-    </section>
 
-    <section id="overview" class="mx-auto w-full max-w-7xl px-4 pb-10 sm:px-8">
-      <div class="landing-hero">
-        <div class="landing-copy">
-          <span class="landing-kicker">Personalized civility prompt system</span>
-          <h1 class="landing-title">
-            在评论真正发出去之前，
-            <br />
-            先给冲动一个更体面的出口。
+        <div class="editorial-actions">
+          <button class="editorial-ghost-button" @click="enterDeveloper">研究后台</button>
+          <button class="editorial-primary-button" @click="enterParticipant">开始测试</button>
+        </div>
+      </nav>
+    </header>
+
+    <section id="overview" class="editorial-container editorial-hero">
+      <div class="editorial-grid">
+        <div class="editorial-hero-copy">
+          <p class="editorial-kicker">Personalized civility prompt interface</p>
+          <h1 class="editorial-title">
+            在评论<br />
+            发出去<br />
+            之前
           </h1>
-          <p class="landing-subtitle">
-            这个原型围绕大学生在线评论场景，研究 AIGC 个性化提示是否能减少不文明表达。
-            参与者会先完成知情同意与前测，再进入校园讨论情境，在触发风险表达时收到更克制、更贴合语境的提示。
+          <p class="editorial-dek">
+            这是一个围绕大学生在线评论场景设计的研究原型。系统并不替参与者做决定，而是在识别到高风险表达时，
+            提供更有共情感、后果意识、规范提醒或替代表达的个性化提示，观察它是否能降低不文明表达。
           </p>
 
-          <div class="landing-actions">
-            <button class="primary-button" @click="enterParticipant">进入参与流程</button>
-            <button class="secondary-button" @click="scrollToSection('flow')">查看研究流程</button>
-          </div>
-
-          <div class="landing-metrics">
-            <article class="landing-metric">
-              <strong>3 个</strong>
-              <span>校园争议情境</span>
-            </article>
-            <article class="landing-metric">
-              <strong>5 类</strong>
-              <span>个性化提示策略</span>
-            </article>
-            <article class="landing-metric">
-              <strong>2-4 分钟</strong>
-              <span>单次完整体验</span>
-            </article>
+          <div class="editorial-cta-row">
+            <button class="editorial-primary-button" @click="enterParticipant">进入参与流程</button>
+            <button class="editorial-ghost-button" @click="scrollToSection('flow')">查看研究流程</button>
           </div>
         </div>
 
-        <div class="landing-visual">
-          <article class="landing-card landing-card-primary">
-            <img
-              src="https://images.pexels.com/photos/7821494/pexels-photo-7821494.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=900&w=1200"
-              alt="学生在研究讨论中协作"
-            />
-            <div class="landing-card-caption">
-              <span>Scenario-based study</span>
-              <strong>让研究流程看起来像一个精心设计的体验，而不是冷冰冰的表单。</strong>
-            </div>
-          </article>
+        <figure class="editorial-hero-image image-hover-reveal">
+          <img
+            src="https://images.pexels.com/photos/5699456/pexels-photo-5699456.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=1400&w=1100"
+            alt="学生在数字环境中阅读与思考评论内容"
+          />
+        </figure>
 
-          <article class="landing-card landing-card-stat">
-            <p class="section-label">Prompt layers</p>
-            <h2>共情 / 后果 / 规范 / 替代表达 / 对照</h2>
-            <p>提示不直接替你做决定，而是帮助你在保留观点的同时，换一种更容易被接收的表达方式。</p>
-          </article>
+        <div class="editorial-pullquote">
+          <span class="editorial-accent-line"></span>
+          <p>
+            提示不是替你发言，
+            <br />
+            而是给冲动一个重新组织语气的出口。
+          </p>
+        </div>
 
-          <article class="landing-card landing-card-shot">
-            <img
-              src="https://images.pexels.com/photos/7947400/pexels-photo-7947400.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=900&w=1200"
-              alt="数据分析和可视化工作台"
-            />
+        <div class="editorial-metrics">
+          <article>
+            <strong>3</strong>
+            <span>校园讨论情境</span>
           </article>
+          <article>
+            <strong>5</strong>
+            <span>提示策略分组</span>
+          </article>
+          <article>
+            <strong>2-4 min</strong>
+            <span>完整体验时长</span>
+          </article>
+        </div>
 
-          <article class="landing-card landing-card-note">
-            <p class="section-label">Research dashboard</p>
-            <h2>不仅记录行为结果，也记录提示的帮助感、友好度和贴合度。</h2>
-          </article>
+        <div class="editorial-side-note">
+          <p>Within scope</p>
+          <strong>功能扩展严格限定在申报书边界内，只补足研究展示、实验进入与结果观察链路。</strong>
         </div>
       </div>
     </section>
 
-    <section id="flow" class="mx-auto w-full max-w-7xl px-4 pb-10 sm:px-8">
-      <div class="landing-panel">
-        <div class="landing-panel-head">
-          <span class="eyebrow-pill">Flow</span>
-          <h2>首页结构参考 Maze 的信息节奏，但内容完全贴合你的申报书边界。</h2>
-        </div>
+    <section class="editorial-container editorial-story">
+      <div class="editorial-grid editorial-story-grid">
+        <figure class="editorial-story-image tall image-hover-reveal">
+          <img
+            src="https://images.pexels.com/photos/3184465/pexels-photo-3184465.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=1200&w=900"
+            alt="研究参与者在讨论与观察界面中思考表达"
+          />
+        </figure>
 
-        <div class="landing-steps">
-          <article class="landing-step">
-            <span>01</span>
-            <h3>知情同意与前测</h3>
-            <p>收集年级、常用平台、评论频率与文明表达自我效能等基础变量。</p>
-          </article>
-          <article class="landing-step">
-            <span>02</span>
-            <h3>情境评论与提示干预</h3>
-            <p>进入校园讨论场景，系统识别高风险表达后给出对应类型的个性化提示。</p>
-          </article>
-          <article class="landing-step">
-            <span>03</span>
-            <h3>后测反馈与可视化</h3>
-            <p>记录修改行为、决策时长、提示接受度，以及研究后台的分组与结果分布。</p>
-          </article>
-        </div>
+        <article class="editorial-story-copy">
+          <p class="editorial-kicker">Scenario and intervention</p>
+          <h2>像杂志排版一样组织信息层级，而不是把研究内容平均摊成一排排卡片。</h2>
+          <p>
+            首页现在把“大标题、研究语境、配图、流程与入口”交错放置，视觉重心更明确。
+            参与者会先理解这是一个什么研究、为什么会出现提示、系统会记录哪些反馈，再决定是否进入。
+          </p>
+        </article>
+
+        <figure class="editorial-story-image square image-hover-reveal">
+          <img
+            src="https://images.pexels.com/photos/3861969/pexels-photo-3861969.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=900&w=900"
+            alt="界面中的数据与行为观察"
+          />
+        </figure>
+
+        <article id="feed" class="editorial-feed">
+          <p class="editorial-kicker">Research feed</p>
+          <ul>
+            <li>
+              <button @click="scrollToSection('flow')">
+                <span>前测、提示评价、后测反馈被放在同一条叙事链上</span>
+                <span>→</span>
+              </button>
+            </li>
+            <li>
+              <button @click="enterParticipant">
+                <span>参与入口直接连接实验流程，不再被次要说明淹没</span>
+                <span>→</span>
+              </button>
+            </li>
+            <li>
+              <button @click="enterDeveloper">
+                <span>研究后台独立为监测视角，和参与者端区隔开</span>
+                <span>→</span>
+              </button>
+            </li>
+          </ul>
+        </article>
+
+        <article class="editorial-fact-block">
+          <p class="editorial-kicker">What we observe</p>
+          <h3>评论修改行为、提示接受度、决策时长与反思增益</h3>
+          <p>这些数据点都来自申报书已有的研究变量，没有新增超范围业务。</p>
+        </article>
       </div>
     </section>
 
-    <section id="evidence" class="mx-auto w-full max-w-7xl px-4 pb-14 sm:px-8">
-      <div class="landing-evidence">
-        <article class="landing-evidence-card">
-          <span class="eyebrow-pill">Why this UI</span>
-          <h3>更像研究产品，而不是课题附件</h3>
-          <p>首页先建立可信度和参与意愿，再把实验流程分层呈现，减少受试者进入前的心理负担。</p>
+    <section id="flow" class="editorial-container editorial-flow">
+      <div class="editorial-grid editorial-flow-grid">
+        <div class="editorial-flow-heading">
+          <p class="editorial-kicker">Flow</p>
+          <h2>研究流程被拆成三段，但视觉上不再像均匀的流程卡片。</h2>
+        </div>
+
+        <article class="editorial-step editorial-step-a">
+          <span>01</span>
+          <h3>知情同意与前测</h3>
+          <p>采集年级、常用平台、评论频率与文明表达自我效能等基础变量，为后续分组和观察提供背景。</p>
         </article>
-        <article class="landing-evidence-card">
-          <span class="eyebrow-pill">What we measure</span>
-          <h3>功能新增仍严格限定在申报书范围内</h3>
-          <p>包括前测、提示评价、后测反馈、风险特征展示、表达对比、一键采纳建议与研究仪表板洞察。</p>
+
+        <article class="editorial-step editorial-step-b">
+          <span>02</span>
+          <h3>情境评论与提示干预</h3>
+          <p>参与者进入校园讨论场景。若系统识别到不文明风险表达，就触发对应类型的个性化提示与改写建议。</p>
         </article>
-        <article class="landing-evidence-card accent">
-          <span class="eyebrow-pill">Try it now</span>
-          <h3>如果线上接口暂时不可用，也能自动进入本地演示模式。</h3>
-          <button class="primary-button mt-5" @click="enterParticipant">现在开始</button>
+
+        <article class="editorial-step editorial-step-c">
+          <span>03</span>
+          <h3>后测反馈与结果观察</h3>
+          <p>记录最终行为、对提示的帮助感和贴合度评价，以及反思提升和现实采纳意愿。</p>
         </article>
+      </div>
+    </section>
+
+    <section class="editorial-container editorial-outro">
+      <div class="editorial-grid editorial-outro-grid">
+        <article class="editorial-outro-copy">
+          <p class="editorial-kicker">Prototype intent</p>
+          <h2>这不是“课程作业首页”的气质，而是一页真正为研究说服力服务的前端封面。</h2>
+          <p>
+            现在的首页优先建立可信度、研究氛围和清晰入口，再把实验流程和可记录指标自然展开。
+            如果你愿意，我下一步可以继续把 `Intro` 和 `Scenario` 页也统一到这一套视觉语言里。
+          </p>
+        </article>
+
+        <figure class="editorial-outro-image image-hover-reveal">
+          <img
+            src="https://images.pexels.com/photos/3184328/pexels-photo-3184328.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=1200&w=1000"
+            alt="研究原型展示中的人物与屏幕"
+          />
+        </figure>
+
+        <div class="editorial-outro-actions">
+          <button class="editorial-primary-button" @click="enterParticipant">立即开始实验</button>
+          <button class="editorial-ghost-button" @click="enterDeveloper">查看后台结果</button>
+        </div>
       </div>
     </section>
   </main>
@@ -169,3 +221,569 @@ function scrollToSection(id) {
   document.getElementById(id)?.scrollIntoView({ behavior: "smooth", block: "start" });
 }
 </script>
+
+<style scoped>
+.editorial-page {
+  background:
+    radial-gradient(circle at top right, rgba(201, 90, 51, 0.09), transparent 26%),
+    linear-gradient(180deg, #fcfaf7 0%, #f4f0e9 100%);
+  color: #121212;
+  padding-bottom: 5rem;
+}
+
+.editorial-container {
+  margin: 0 auto;
+  width: min(100%, 1440px);
+  padding-left: 1.5rem;
+  padding-right: 1.5rem;
+}
+
+.editorial-marquee {
+  border-bottom: 1px solid rgba(18, 18, 18, 0.08);
+  background: rgba(249, 248, 246, 0.92);
+}
+
+.editorial-marquee-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding-bottom: 0.9rem;
+  padding-top: 0.9rem;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+}
+
+.editorial-inline-link {
+  border: 0;
+  background: transparent;
+  color: #c95a33;
+  cursor: pointer;
+  font: inherit;
+  text-decoration: underline;
+  text-underline-offset: 0.35rem;
+}
+
+.editorial-nav-wrap {
+  padding-top: 1.5rem;
+}
+
+.editorial-nav {
+  position: sticky;
+  top: 1rem;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  border: 1px solid rgba(18, 18, 18, 0.08);
+  background: rgba(249, 248, 246, 0.84);
+  backdrop-filter: blur(18px);
+  padding: 1rem 1.25rem;
+}
+
+.editorial-brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.9rem;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+  font: inherit;
+  padding: 0;
+  text-align: left;
+}
+
+.editorial-brand-mark {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 3rem;
+  height: 3rem;
+  background: #111111;
+  color: #f9f8f6;
+  font-size: 1.35rem;
+  font-weight: 700;
+}
+
+.editorial-brand strong,
+.editorial-brand small {
+  display: block;
+}
+
+.editorial-brand small {
+  color: rgba(18, 18, 18, 0.58);
+  font-size: 0.72rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.editorial-links,
+.editorial-actions,
+.editorial-cta-row {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+}
+
+.editorial-links a {
+  color: inherit;
+  font-size: 0.92rem;
+  text-decoration: none;
+}
+
+.editorial-primary-button,
+.editorial-ghost-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 2.9rem;
+  padding: 0 1.25rem;
+  border-radius: 999px;
+  font-size: 0.92rem;
+  font-weight: 700;
+  transition:
+    transform 180ms ease,
+    background 180ms ease,
+    border-color 180ms ease,
+    color 180ms ease,
+    box-shadow 180ms ease;
+}
+
+.editorial-primary-button {
+  border: 1px solid #111111;
+  background: #111111;
+  color: #f9f8f6;
+  box-shadow: 0 1rem 2.5rem rgba(17, 17, 17, 0.14);
+}
+
+.editorial-primary-button:hover,
+.editorial-ghost-button:hover {
+  transform: translateY(-1px);
+}
+
+.editorial-ghost-button {
+  border: 1px solid rgba(18, 18, 18, 0.12);
+  background: rgba(255, 255, 255, 0.35);
+  color: #111111;
+}
+
+.editorial-hero {
+  padding-top: 3rem;
+}
+
+.editorial-grid {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  gap: 1.35rem;
+}
+
+.editorial-hero-copy {
+  grid-column: 1 / span 6;
+  padding-top: 2.5rem;
+}
+
+.editorial-kicker {
+  margin: 0;
+  color: #c95a33;
+  font-size: 0.76rem;
+  font-weight: 800;
+  letter-spacing: 0.26em;
+  text-transform: uppercase;
+}
+
+.editorial-title {
+  margin: 1rem 0 0;
+  font-family: "Noto Serif SC", "Songti SC", serif;
+  font-size: clamp(4.7rem, 10vw, 10.4rem);
+  font-weight: 900;
+  letter-spacing: -0.08em;
+  line-height: 0.88;
+  text-transform: uppercase;
+}
+
+.editorial-dek {
+  margin-top: 1.8rem;
+  max-width: 34rem;
+  color: rgba(18, 18, 18, 0.68);
+  font-size: 1rem;
+  line-height: 1.9;
+}
+
+.editorial-cta-row {
+  margin-top: 2rem;
+  flex-wrap: wrap;
+}
+
+.editorial-hero-image {
+  grid-column: 8 / span 4;
+  position: relative;
+  margin-top: 1rem;
+  aspect-ratio: 4 / 5;
+  overflow: hidden;
+  box-shadow: 0 2rem 4rem rgba(18, 18, 18, 0.14);
+}
+
+.editorial-hero-image::after,
+.editorial-story-image::after,
+.editorial-outro-image::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border: 1px solid rgba(18, 18, 18, 0.08);
+  pointer-events: none;
+}
+
+.editorial-hero-image img,
+.editorial-story-image img,
+.editorial-outro-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.image-hover-reveal img {
+  filter: grayscale(1) contrast(1.04);
+  transition:
+    filter 260ms ease,
+    transform 260ms ease;
+}
+
+.image-hover-reveal:hover img {
+  filter: grayscale(0) contrast(1);
+  transform: scale(1.02);
+}
+
+.editorial-pullquote {
+  grid-column: 6 / span 4;
+  margin-top: -6rem;
+  background: rgba(249, 248, 246, 0.94);
+  padding: 1.8rem 1.9rem 0 0;
+  position: relative;
+  z-index: 2;
+}
+
+.editorial-pullquote p {
+  margin: 1.1rem 0 0;
+  font-size: clamp(1.2rem, 2.2vw, 1.8rem);
+  font-weight: 700;
+  line-height: 1.35;
+}
+
+.editorial-accent-line {
+  display: block;
+  width: 6rem;
+  height: 0.38rem;
+  background: #c95a33;
+}
+
+.editorial-metrics {
+  grid-column: 1 / span 5;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1rem;
+  margin-top: -1.2rem;
+}
+
+.editorial-metrics article {
+  padding-top: 1.35rem;
+  border-top: 1px solid rgba(18, 18, 18, 0.12);
+}
+
+.editorial-metrics strong {
+  display: block;
+  font-size: clamp(1.7rem, 4vw, 2.3rem);
+  font-weight: 800;
+}
+
+.editorial-metrics span {
+  display: block;
+  margin-top: 0.5rem;
+  color: rgba(18, 18, 18, 0.6);
+  font-size: 0.9rem;
+}
+
+.editorial-side-note {
+  grid-column: 10 / span 3;
+  align-self: end;
+  margin-top: -5rem;
+  padding: 1.3rem 1.4rem;
+  border-left: 3px solid #c95a33;
+  background: rgba(255, 255, 255, 0.62);
+  box-shadow: 0 1rem 2.4rem rgba(18, 18, 18, 0.08);
+}
+
+.editorial-side-note p,
+.editorial-fact-block p {
+  margin: 0;
+  color: rgba(18, 18, 18, 0.58);
+  font-size: 0.84rem;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
+.editorial-side-note strong {
+  display: block;
+  margin-top: 0.8rem;
+  font-size: 1rem;
+  line-height: 1.7;
+}
+
+.editorial-story,
+.editorial-flow,
+.editorial-outro {
+  padding-top: 6rem;
+}
+
+.editorial-story-grid {
+  align-items: start;
+}
+
+.editorial-story-image.tall {
+  grid-column: 1 / span 3;
+  aspect-ratio: 3 / 4;
+  margin-top: 1.6rem;
+  overflow: hidden;
+}
+
+.editorial-story-copy {
+  grid-column: 4 / span 5;
+  padding-top: 3.5rem;
+}
+
+.editorial-story-copy h2,
+.editorial-flow-heading h2,
+.editorial-outro-copy h2 {
+  margin: 1rem 0 0;
+  font-family: "Noto Serif SC", "Songti SC", serif;
+  font-size: clamp(2.2rem, 4.8vw, 4.2rem);
+  line-height: 1.02;
+  letter-spacing: -0.05em;
+}
+
+.editorial-story-copy p:not(.editorial-kicker),
+.editorial-fact-block p:last-child,
+.editorial-step p,
+.editorial-outro-copy p:not(.editorial-kicker) {
+  margin-top: 1.15rem;
+  color: rgba(18, 18, 18, 0.7);
+  font-size: 1rem;
+  line-height: 1.9;
+}
+
+.editorial-story-image.square {
+  grid-column: 10 / span 3;
+  aspect-ratio: 1 / 1;
+  overflow: hidden;
+}
+
+.editorial-feed {
+  grid-column: 9 / span 4;
+  margin-top: -6rem;
+  padding-top: 2rem;
+}
+
+.editorial-feed ul {
+  margin: 1.1rem 0 0;
+  padding: 0;
+  list-style: none;
+  border-top: 1px solid rgba(18, 18, 18, 0.12);
+}
+
+.editorial-feed li {
+  border-bottom: 1px solid rgba(18, 18, 18, 0.12);
+}
+
+.editorial-feed button {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+  font: inherit;
+  padding: 1.15rem 0;
+  text-align: left;
+  transition: color 180ms ease;
+}
+
+.editorial-feed button span:last-child {
+  color: #c95a33;
+  font-size: 1.2rem;
+  transition: transform 180ms ease;
+}
+
+.editorial-feed button:hover span:last-child {
+  transform: translateX(0.2rem);
+}
+
+.editorial-fact-block {
+  grid-column: 3 / span 4;
+  margin-top: -3rem;
+  padding: 1.5rem 1.6rem;
+  background: #151515;
+  color: #f7f2eb;
+}
+
+.editorial-fact-block h3 {
+  margin: 0.9rem 0 0;
+  font-size: 1.6rem;
+  line-height: 1.2;
+}
+
+.editorial-fact-block p:last-child {
+  color: rgba(247, 242, 235, 0.72);
+}
+
+.editorial-flow-grid {
+  align-items: start;
+}
+
+.editorial-flow-heading {
+  grid-column: 1 / span 5;
+  padding-right: 2rem;
+}
+
+.editorial-step {
+  min-height: 16rem;
+  padding: 1.6rem;
+  border-top: 4px solid #c95a33;
+  background: rgba(255, 255, 255, 0.48);
+  box-shadow: 0 1.25rem 2.8rem rgba(18, 18, 18, 0.08);
+}
+
+.editorial-step span {
+  color: #c95a33;
+  font-size: 0.85rem;
+  font-weight: 800;
+  letter-spacing: 0.18em;
+}
+
+.editorial-step h3 {
+  margin: 1rem 0 0;
+  font-size: 1.75rem;
+  line-height: 1.15;
+}
+
+.editorial-step-a {
+  grid-column: 7 / span 3;
+  margin-top: 2rem;
+}
+
+.editorial-step-b {
+  grid-column: 10 / span 3;
+  margin-top: -1rem;
+}
+
+.editorial-step-c {
+  grid-column: 8 / span 4;
+  margin-top: 1.4rem;
+}
+
+.editorial-outro-grid {
+  align-items: center;
+}
+
+.editorial-outro-copy {
+  grid-column: 1 / span 5;
+}
+
+.editorial-outro-image {
+  grid-column: 7 / span 4;
+  aspect-ratio: 4 / 5;
+  overflow: hidden;
+  margin-top: 1rem;
+}
+
+.editorial-outro-actions {
+  grid-column: 10 / span 3;
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+  align-self: end;
+  margin-bottom: 2rem;
+}
+
+@media (max-width: 1180px) {
+  .editorial-nav {
+    flex-wrap: wrap;
+  }
+
+  .editorial-links {
+    order: 3;
+    width: 100%;
+    justify-content: center;
+  }
+
+  .editorial-hero-copy,
+  .editorial-hero-image,
+  .editorial-pullquote,
+  .editorial-metrics,
+  .editorial-side-note,
+  .editorial-story-image.tall,
+  .editorial-story-copy,
+  .editorial-story-image.square,
+  .editorial-feed,
+  .editorial-fact-block,
+  .editorial-flow-heading,
+  .editorial-step-a,
+  .editorial-step-b,
+  .editorial-step-c,
+  .editorial-outro-copy,
+  .editorial-outro-image,
+  .editorial-outro-actions {
+    grid-column: 1 / -1;
+    margin-top: 0;
+  }
+
+  .editorial-pullquote,
+  .editorial-side-note,
+  .editorial-feed,
+  .editorial-fact-block {
+    max-width: 42rem;
+  }
+
+  .editorial-hero-image,
+  .editorial-outro-image {
+    max-width: 30rem;
+  }
+}
+
+@media (max-width: 780px) {
+  .editorial-container {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+
+  .editorial-marquee-inner,
+  .editorial-nav,
+  .editorial-links,
+  .editorial-actions,
+  .editorial-cta-row,
+  .editorial-outro-actions {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .editorial-metrics {
+    grid-template-columns: 1fr;
+  }
+
+  .editorial-title {
+    font-size: clamp(3.2rem, 17vw, 5.5rem);
+  }
+
+  .editorial-story-copy h2,
+  .editorial-flow-heading h2,
+  .editorial-outro-copy h2 {
+    font-size: clamp(2rem, 10vw, 3.2rem);
+  }
+}
+</style>
