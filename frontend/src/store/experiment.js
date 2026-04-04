@@ -237,8 +237,25 @@ function buildDashboardFallback(logs, allocation) {
   };
 }
 
+function buildApiShapeError(endpoint) {
+  const error = new Error(`Invalid API response from ${endpoint}`);
+  error.code = "ERR_BAD_API_RESPONSE";
+  return error;
+}
+
+function isHtmlPayloadError(error) {
+  const contentType = String(error?.responseContentType || "").toLowerCase();
+  const responseText = String(error?.responseText || "").toLowerCase();
+  return (
+    contentType.includes("text/html") ||
+    responseText.includes("<!doctype html") ||
+    responseText.includes("<html")
+  );
+}
+
 function isLikelyNetworkError(error) {
   const message = String(error?.message || error || "").toLowerCase();
+  const status = Number(error?.status || 0);
   return (
     message.includes("network error") ||
     message.includes("fetch") ||
@@ -246,7 +263,20 @@ function isLikelyNetworkError(error) {
     message.includes("timeout") ||
     message.includes("connect") ||
     message.includes("socket") ||
-    message.includes("failed to load")
+    message.includes("failed to load") ||
+    message.includes("request failed with status code 404") ||
+    message.includes("request failed with status code 405") ||
+    message.includes("request failed with status code 500") ||
+    message.includes("request failed with status code 502") ||
+    message.includes("request failed with status code 503") ||
+    message.includes("request failed with status code 504") ||
+    message.includes("cors") ||
+    message.includes("cross-origin") ||
+    status === 404 ||
+    status === 405 ||
+    status >= 500 ||
+    isHtmlPayloadError(error) ||
+    error?.code === "ERR_BAD_API_RESPONSE"
   );
 }
 
@@ -450,6 +480,9 @@ export const useExperimentStore = defineStore("experiment", {
             civility_confidence: this.preSurvey.civilityConfidence
           }
         });
+        if (!data?.experiment_id || !data?.group || !data?.scenario_id) {
+          throw buildApiShapeError("/experiment/init");
+        }
 
         this.setRuntimeState("online", "");
         this.experimentId = data.experiment_id;
@@ -519,6 +552,9 @@ export const useExperimentStore = defineStore("experiment", {
           { experiment_id: this.experimentId, comment_text: commentText },
           { signal: controller.signal, timeout: 20000 }
         );
+        if (typeof data?.is_uncivil !== "boolean" || !Array.isArray(data?.risk_features || [])) {
+          throw buildApiShapeError("/comment/check");
+        }
 
         tracker.end("check_api_latency", { uncivil: data.is_uncivil });
         this.setRuntimeState("online", "");
@@ -624,6 +660,9 @@ export const useExperimentStore = defineStore("experiment", {
           signal: controller.signal,
           timeout: 20000
         });
+        if (typeof data?.success !== "boolean") {
+          throw buildApiShapeError("/comment/action");
+        }
 
         tracker.end("action_api_latency", { action, choice });
         tracker.end("full_journey", { action, choice });
@@ -708,7 +747,10 @@ export const useExperimentStore = defineStore("experiment", {
       }
 
       try {
-        await apiClient.post("/experiment/feedback", payload);
+        const { data } = await apiClient.post("/experiment/feedback", payload);
+        if (data && typeof data.success !== "boolean") {
+          throw buildApiShapeError("/experiment/feedback");
+        }
         this.setRuntimeState("online", "");
       } catch (error) {
         if (!isLikelyNetworkError(error)) {

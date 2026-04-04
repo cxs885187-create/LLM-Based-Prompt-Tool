@@ -38,8 +38,26 @@ apiClient.interceptors.response.use(
     if (error?.code === "ERR_CANCELED") {
       return Promise.reject(error);
     }
-    const message = error?.response?.data?.detail || error.message || "Request failed";
-    return Promise.reject(new Error(message));
+
+    const responseData = error?.response?.data;
+    const responseDetail =
+      typeof responseData === "object" && responseData !== null
+        ? responseData.detail
+        : null;
+    const responseText =
+      typeof responseData === "string"
+        ? responseData.slice(0, 240)
+        : "";
+    const message = responseDetail || error.message || "Request failed";
+
+    const normalizedError = new Error(message);
+    normalizedError.code = error?.code;
+    normalizedError.status = error?.response?.status ?? null;
+    normalizedError.responseText = responseText;
+    normalizedError.responseContentType = error?.response?.headers?.["content-type"] || "";
+    normalizedError.requestUrl = error?.config?.url || "";
+
+    return Promise.reject(normalizedError);
   }
 );
 
